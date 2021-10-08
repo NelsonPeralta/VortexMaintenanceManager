@@ -17,4 +17,30 @@
     <input type="password" placeholder="password" id="register-password-input">
     <button id="register-register-btn">Register</button>
 </body>
+<script>
+    const register = () =>{
+            const emailValue = document.getElementById("register-email-input").value
+            const companyValue = document.getElementById("register-company-input").value
+            const pwdValue = document.getElementById("register-password-input").value
+
+            let formData = new FormData();
+            formData.append('service', "register")
+            formData.append('email', emailValue)
+            formData.append('company', companyValue)
+            formData.append('password', pwdValue)
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                console.log(data)
+            })
+        }
+</script>
 </html>
