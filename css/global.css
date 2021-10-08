@@ -1,0 +1,54 @@
+body{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(255, 255, 255);
+    color: black;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.align-horizontal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.small-margin{
+    margin: 0.25rem;
+}
+
+button{
+    background-color: rgb(240, 240, 240);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 1rem;
+}
+
+button:hover{
+    cursor: pointer;
+    color: rgb(0, 183, 255);
+}
+
+#navigation-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    width: 90vw;
+    padding: 1rem;
+
+    box-shadow: 0 2px rgba(136, 136, 136, 0.25); /*First Value is Hor offset, second is Vertical*/
+    margin-bottom: 2rem;
+}
+
+#navigation-bar{
+    display: flex;
+    align-items: center;
+}
+
+#navigation-bar-vortex-logo{
+    height: 3rem;
+}
