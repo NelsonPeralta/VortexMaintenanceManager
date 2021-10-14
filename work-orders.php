@@ -1,7 +1,7 @@
 <?php
-    require_once("action/HomeAction.php");
+    require_once("action/WorkOrdersAction.php");
 
-	$action = new HomeAction();
+	$action = new WorkOrdersAction();
 	$data = $action->execute();	
 ?>
 <!DOCTYPE html>

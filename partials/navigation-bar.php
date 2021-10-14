@@ -55,6 +55,14 @@
             }
         }).then(data => {
             console.log(data)
+            data = JSON.parse(data)["result"]
+
+            if(data["error"] != "")
+                alert(data["error"])
+            else{
+                alert("Logout avec success!")
+                window.location.replace("index.php")
+            }
         })
     }
 </script>

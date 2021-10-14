@@ -11,6 +11,8 @@
                     return $this->register();
                 }else if($_POST["service"] == "login"){
                     return $this->login();
+                }else if($_POST["service"] == "logout"){
+                    return $this->logout();
                 }
             }
         }
@@ -82,6 +84,14 @@
                 $_SESSION["user"] = $userdao;
             }
 
+            return compact("result");
+        }
+
+        function logout(){
+            session_unset();
+            session_destroy();
+
+            $result["error"] = "";
             return compact("result");
         }
     }
