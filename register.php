@@ -12,16 +12,27 @@
 </head>
 <body>
     <?php include_once("partials/navigation-bar.php"); ?>
-    <input type="text" placeholder="name" id="register-name-input">
-    <input type="text" placeholder="surname" id="register-surname-input">
-    <input type="text" placeholder="username" id="register-username-input">
-    <input type="password" placeholder="password" id="register-password-input">
-    <input type="text" placeholder="email" id="register-email-input">
-    <input type="text" placeholder="company" id="register-company-input">
-    <button id="register-register-btn" onclick="register()">Register</button>
+    <div id="register-menu" class="align-horizontal">
+        <input type="text" placeholder="name" id="register-name-input">
+        <input type="text" placeholder="surname" id="register-surname-input">
+        <input type="text" placeholder="username" id="register-username-input">
+        <input type="password" placeholder="password" id="register-password-input">
+        <input type="text" placeholder="email" id="register-email-input">
+        <input type="text" placeholder="company" id="register-company-input">
+        <button id="register-register-btn" onclick="register()">Register</button>
+    </div>
+    <div id="register-working">
+        <p>Working...</p>
+    </div>
 </body>
 <script>
+    const registermenu = document.getElementById("register-menu")
+    const registerworkingtext = document.getElementById("register-working")
+
+    registerworkingtext.style.display = "none"
+
     const register = () =>{
+
 
             const nameValue = document.getElementById("register-name-input").value
             const surnameValue = document.getElementById("register-surname-input").value
@@ -52,6 +63,8 @@
 
             if(erreurs.length <= 0){
 
+                registermenu.style.display = "none"
+                registerworkingtext.style.display = "block"
 
                 fetch("ajax.php", {
                     method: "POST",
@@ -66,11 +79,15 @@
                     console.log(data)
                     data = JSON.parse(data)["result"]
 
-                    if(data["error"] != "")
+                    if(data["error"] != ""){
+
                         alert(data["error"])
+                        registermenu.style.display = "flex"
+                        registerworkingtext.style.display = "none"
+                    }
                     else{
                         alert("Enregistrement avec success!")
-                        // window.location.replace("index.php")
+                        window.location.replace("index.php")
                     }
                 })
 
