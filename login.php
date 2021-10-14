@@ -28,7 +28,6 @@
             if(pwdValue.length <= 0)
                 erreurs += "Le Mot de Passe ne doit pas etre vide\n"
 
-            console.log("asdas")
             if(erreurs.length <= 0){
                 let formData = new FormData();
                 formData.append('service', "login")
@@ -54,7 +53,7 @@
                         alert(data["error"])
                     else{
                         alert("Login avec success!")
-                        window.location.replace("index.php")
+                        window.location.replace("work-orders.php")
                     }
                 })
 

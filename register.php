@@ -57,6 +57,7 @@
                         console.log("REQUEST FAILED, error: " + response.statusText);
                     }
                 }).then(data => {
+                    console.log(data)
                     data = JSON.parse(data)["result"]
 
                     if(data["error"] != "")

@@ -1,12 +1,14 @@
 <?php
     require_once("dao/GlobalConnectionDAO.php");
+    require_once("dao/CompanyConnectionDAO.php");
 
     session_start();
 
     abstract class CommonAction{
 
         public $connection;
-        public $db;
+        public $globaldb;
+        public $companydb;
 
         public function execute(){
             $data = $this->executeAction();
@@ -26,11 +28,12 @@
 
         public function makeglobalconnection(){
             $this->connection = new GlobalConnectionDAO();
-            $this->db = $this->connection->getConnection();
+            $this->globaldb = $this->connection->getConnection();
         }
 
-        public function makecompanyconnection(){
-
+        public function makecompanyconnection($companydbname){
+            $this->connection = new CompanyConnectionDAO();
+            $this->companydb = $this->connection->getConnection($companydbname);
         }
     }
 ?>
