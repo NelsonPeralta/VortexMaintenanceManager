@@ -12,6 +12,8 @@
 </head>
 <body>
     <?php include_once("partials/navigation-bar.php"); ?>
+    <input type="text" placeholder="name" id="register-name-input">
+    <input type="text" placeholder="surname" id="register-surname-input">
     <input type="text" placeholder="username" id="register-username-input">
     <input type="password" placeholder="password" id="register-password-input">
     <input type="text" placeholder="email" id="register-email-input">
@@ -21,6 +23,8 @@
 <script>
     const register = () =>{
 
+            const nameValue = document.getElementById("register-name-input").value
+            const surnameValue = document.getElementById("register-surname-input").value
             const usernameValue = document.getElementById("register-username-input").value
             const pwdValue = document.getElementById("register-password-input").value
             const emailValue = document.getElementById("register-email-input").value
@@ -28,6 +32,8 @@
 
             let formData = new FormData();
             formData.append('service', "register")
+            formData.append('name', nameValue)
+            formData.append('surname', surnameValue)
             formData.append('username', usernameValue)
             formData.append('password', pwdValue)
             formData.append('email', emailValue)
@@ -64,7 +70,7 @@
                         alert(data["error"])
                     else{
                         alert("Enregistrement avec success!")
-                        window.location.replace("index.php")
+                        // window.location.replace("index.php")
                     }
                 })
 

@@ -1,7 +1,8 @@
 <?php
     require_once("action/CommonAction.php");
     require_once("dao/globalconnectioncredentials.php");
-    include_once("dao/UserDAO.php");
+    require_once("dao/UserDAO.php");
+    require_once("dao/CompanyDAO.php");
 
     class AjaxAction extends CommonAction {
         
@@ -53,7 +54,30 @@
                 $this->globaldb->commit();
                 $companydbname = COMPANY_DATABASE_NAME_PREFIX . $company;
 
+                $req = $this->globaldb->prepare("SELECT id FROM users WHERE username='$username'");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $userid = $req->fetch();
+                $userid = $userid["id"];
+
                 $req = $this->globaldb->prepare("CREATE DATABASE $companydbname");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+
+                $this->makecompanyconnection($companydbname);
+
+                $fichier = fopen("scripts/companydb_creation.txt", "r");
+                $textecreation = fread($fichier,filesize("scripts/companydb_creation.txt"));
+                fclose($fichier);
+
+                $req = $this->companydb->prepare($textecreation);
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+
+                $membername = $_POST["name"];
+                $membersurname = $_POST["surname"];
+                $req = $this->companydb->prepare("INSERT INTO members (name, surname, user_id) 
+                    VALUES ('$membername', '$membersurname', '$userid')");
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
             }
@@ -74,14 +98,23 @@
             $req = $this->globaldb->prepare("SELECT * FROM users WHERE username='$username' AND password='$password' LIMIT 1");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
-            $req_res = $req->fetch();
+            $user_req_res = $req->fetch();
 
-            if(!$req_res){
+            if(!$user_req_res){
                 $result["error"] = "Aucun user avec ces informations";
             }else{
-                $result["info"] = $req_res;
-                $userdao = new UserDAO($req_res["id"], $req_res["username"], $req_res["email"], $req_res["company"]);
-                $_SESSION["user"] = $userdao;
+                $result["info"] = $user_req_res;
+                $userdao = new UserDAO($user_req_res["id"], $user_req_res["username"], $user_req_res["email"], $user_req_res["company"]);
+                // $_SESSION["user"] = $userdao;
+
+                $companyid = $user_req_res["company"];
+
+                $req = $this->globaldb->prepare("SELECT * FROM companies WHERE id='$companyid' LIMIT 1");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $company_req_res = $req->fetch();
+                $companydao = new CompanyDAO($company_req_res["id"], $company_req_res["name"]);
+                // $_SESSION["companyname"] = $companydao->GetName();
             }
 
             return compact("result");

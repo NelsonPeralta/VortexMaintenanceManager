@@ -1,0 +1,244 @@
+--
+-- Table structure for table `equipments`
+--
+
+CREATE TABLE `equipments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tag` varchar(32) NOT NULL,
+  `name` varchar(32) NOT NULL,
+  `description` varchar(1024) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `members`
+--
+
+CREATE TABLE `members` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(32) NOT NULL,
+  `surname` varchar(32) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parts`
+--
+
+CREATE TABLE `parts` (
+  `id` int(11) NOT NULL,
+  `generated_id` int(11) NOT NULL,
+  `name` int(11) NOT NULL,
+  `description` int(11) DEFAULT NULL,
+  `stock` int(11) DEFAULT 0,
+  `price` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `part_withdrawal_entries`
+--
+
+CREATE TABLE `part_withdrawal_entries` (
+  `id` int(11) NOT NULL,
+  `work_order_id` int(11) NOT NULL,
+  `worker_id` int(11) NOT NULL,
+  `part_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `priorities`
+--
+
+CREATE TABLE `priorities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statuses`
+--
+
+CREATE TABLE `statuses` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `work_orders`
+--
+
+CREATE TABLE `work_orders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `generated_id` char(9) DEFAULT NULL,
+  `supervisor_id` int(11) DEFAULT 0,
+  `priority_id` int(11) DEFAULT 0,
+  `status_id` int(11) DEFAULT 0,
+  `equipment_id` int(11) DEFAULT NULL,
+  `title` varchar(128) DEFAULT NULL,
+  `description` varchar(1024) DEFAULT NULL,
+  `date_created` date NOT NULL DEFAULT curdate(),
+  `date_finished` date DEFAULT NULL,
+  `date_start` date DEFAULT NULL,
+  `open` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `work_orders_x_workers`
+--
+
+CREATE TABLE `work_orders_x_workers` (
+  `id` int(11) NOT NULL,
+  `work_order_id` int(11) NOT NULL,
+  `worker_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `work_time_entries`
+--
+
+CREATE TABLE `work_time_entries` (
+  `id` int(11) NOT NULL,
+  `work_order_id` int(11) NOT NULL,
+  `worker_id` int(11) NOT NULL,
+  `date` date NOT NULL DEFAULT current_timestamp(),
+  `hours` int(11) NOT NULL,
+  `minutes` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `equipments`
+--
+ALTER TABLE `equipments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `members`
+--
+ALTER TABLE `members`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `parts`
+--
+ALTER TABLE `parts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `part_withdrawal_entries`
+--
+ALTER TABLE `part_withdrawal_entries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `priorities`
+--
+ALTER TABLE `priorities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `statuses`
+--
+ALTER TABLE `statuses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `work_orders`
+--
+ALTER TABLE `work_orders`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `work_orders_x_workers`
+--
+ALTER TABLE `work_orders_x_workers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `work_time_entries`
+--
+ALTER TABLE `work_time_entries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `equipments`
+--
+ALTER TABLE `equipments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `members`
+--
+ALTER TABLE `members`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `parts`
+--
+ALTER TABLE `parts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `part_withdrawal_entries`
+--
+ALTER TABLE `part_withdrawal_entries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `priorities`
+--
+ALTER TABLE `priorities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `statuses`
+--
+ALTER TABLE `statuses`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `work_orders`
+--
+ALTER TABLE `work_orders`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `work_orders_x_workers`
+--
+ALTER TABLE `work_orders_x_workers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `work_time_entries`
+--
+ALTER TABLE `work_time_entries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
