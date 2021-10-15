@@ -53,7 +53,7 @@
                         alert(data["error"])
                     else{
                         alert("Login avec success!")
-                        // window.location.replace("work-orders.php")
+                        window.location.replace("work-orders.php")
                     }
                 })
 

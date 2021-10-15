@@ -5,7 +5,7 @@ require_once('dao/globalconnectioncredentials.php');
 
         public static function getConnection($companydbname){
             if(!isset(CompanyConnectionDAO::$db)){
-                CompanyConnectionDAO::$db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . $companydbname, DB_USER, DB_PASS);
+                CompanyConnectionDAO::$db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . COMPANY_DATABASE_NAME_PREFIX . $companydbname, DB_USER, DB_PASS);
                 CompanyConnectionDAO::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }
             return CompanyConnectionDAO::$db;

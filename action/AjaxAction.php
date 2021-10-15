@@ -3,6 +3,8 @@
     require_once("dao/globalconnectioncredentials.php");
     require_once("dao/UserDAO.php");
     require_once("dao/CompanyDAO.php");
+    require_once("dao/MemberDAO.php");
+    require_once("dao/UserAdaptorDAO.php");
 
     class AjaxAction extends CommonAction {
         
@@ -64,7 +66,7 @@
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
 
-                $this->makecompanyconnection($companydbname);
+                $this->makecompanyconnection($company);
 
                 $fichier = fopen("scripts/companydb_creation.txt", "r");
                 $textecreation = fread($fichier,filesize("scripts/companydb_creation.txt"));
@@ -105,7 +107,7 @@
             }else{
                 $result["info"] = $user_req_res;
                 $userdao = new UserDAO($user_req_res["id"], $user_req_res["username"], $user_req_res["email"], $user_req_res["company"]);
-                // $_SESSION["user"] = $userdao;
+                $_SESSION["user"] = $userdao;
 
                 $companyid = $user_req_res["company"];
 
@@ -114,6 +116,20 @@
                 $req->execute();
                 $company_req_res = $req->fetch();
                 $companydao = new CompanyDAO($company_req_res["id"], $company_req_res["name"]);
+
+
+                $this->makecompanyconnection($companydao->GetName());
+                $userId = $userdao->GetId();
+
+                $req = $this->companydb->prepare("SELECT * FROM members WHERE user_id='$userId' LIMIT 1");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $member_req_res = $req->fetch();
+                $memberdao = new MemberDAO($member_req_res["id"], $member_req_res["name"], $member_req_res["surname"], $member_req_res["user_id"]);
+
+                $useradaptordao = new UserAdaptorDAO($userdao, $companydao, $memberdao);
+
+                $result["user adaptor"] = $useradaptordao;
                 // $_SESSION["companyname"] = $companydao->GetName();
             }
 
