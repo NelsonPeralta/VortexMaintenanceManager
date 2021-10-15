@@ -1,0 +1,48 @@
+
+
+#home-body{
+    background-color: rgba(133, 133, 133, 0.5);
+    height: 10rem;
+}
+
+#home-table{
+    width: 90vw;
+    border: none;
+}
+
+#home-logout-btn:hover{
+    color: rgb(255, 71, 71);
+}
+
+tr.work-order{
+    background-color: rgb(255, 255, 255);
+    border: none;
+}
+
+tr.work-order:hover{
+    cursor: pointer;
+}
+
+textarea{
+    resize: none;
+}
+
+.row-div{
+    display: flex;
+    flex-direction: row;
+}
+
+.planned-time-input{
+    width: 2rem;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}

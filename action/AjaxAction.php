@@ -16,7 +16,8 @@
                     return $this->login();
                 }else if($_POST["service"] == "logout"){
                     return $this->logout();
-                }
+                }else if($_POST["service"] == "save-or-create-work-order")
+                    return $this->saveorcreateworkorder();
             }
         }
 
@@ -107,8 +108,7 @@
             }else{
                 $result["info"] = $user_req_res;
                 $userdao = new UserDAO($user_req_res["id"], $user_req_res["username"], $user_req_res["email"], $user_req_res["company"]);
-                $_SESSION["user"] = $userdao;
-
+                
                 $companyid = $user_req_res["company"];
 
                 $req = $this->globaldb->prepare("SELECT * FROM companies WHERE id='$companyid' LIMIT 1");
@@ -116,18 +116,19 @@
                 $req->execute();
                 $company_req_res = $req->fetch();
                 $companydao = new CompanyDAO($company_req_res["id"], $company_req_res["name"]);
-
+                
 
                 $this->makecompanyconnection($companydao->GetName());
                 $userId = $userdao->GetId();
-
+                
                 $req = $this->companydb->prepare("SELECT * FROM members WHERE user_id='$userId' LIMIT 1");
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
                 $member_req_res = $req->fetch();
                 $memberdao = new MemberDAO($member_req_res["id"], $member_req_res["name"], $member_req_res["surname"], $member_req_res["user_id"]);
-
+                
                 $useradaptordao = new UserAdaptorDAO($userdao, $companydao, $memberdao);
+                $_SESSION["user"] = $useradaptordao;
 
                 $result["user adaptor"] = $useradaptordao;
                 // $_SESSION["companyname"] = $companydao->GetName();
@@ -141,6 +142,60 @@
             session_destroy();
 
             $result["error"] = "";
+            return compact("result");
+        }
+
+        function saveorcreateworkorder(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyDAO()->GetName());
+
+            $result["error"] = "";
+
+            $newTitle = $_POST["title"];
+            $newDes = $_POST["description"];
+
+            $newSup = $_POST["supervisor"];
+
+            $newPri = $_POST["priority"];
+            $newSta = $_POST["status"];
+            $newEqu = $_POST["equipment"];
+
+            if($newTitle != ""){
+
+                
+                if(isset($_POST["wogeneratedid"])){
+                    $woid = $_POST["woid"];
+                    
+                    
+                    $req = $this->db->prepare("UPDATE work_orders SET title='$newTitle', description='$newDes', supervisor='$newSup', applicant='$newApp', responsable='$newRes', priority='$newPri', status='$newSta', equipment='$newEqu' WHERE id='$woid';");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                }else{
+                    $result["info"] = "Creating Work Order";
+                    
+                    $req = $this->companydb->prepare("INSERT INTO `work_orders` (`id`, `generated_id`, `supervisor_id`, `priority_id`, `status_id`, `equipment_id`, `title`, `description`, `date_created`, `date_finished`, `date_start`, `open`) 
+                    VALUES (NULL, NULL, '$newSup', '$newPri', '$newSta', '$newEqu', '$newTitle', '$newDes',curdate(), NULL, NULL, 1);");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                    
+                    $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                    $req = $req->fetch();
+                    $woid = $req["LAST_INSERT_ID()"];
+                    
+                    $this_year = date("Y");
+                    $new_id = str_pad($woid, 7, "0", STR_PAD_LEFT);
+                    $generated_id = $this_year . "-" . $new_id;
+                    
+                    $req = $this->companydb->prepare("UPDATE work_orders SET generated_id='$generated_id' WHERE id='$woid';");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+
+                    $result["generated_id"] = $generated_id;
+                }
+            }else{
+                $result["error"] = "Le titre ne doit pas etre vide";
+            }
             return compact("result");
         }
     }

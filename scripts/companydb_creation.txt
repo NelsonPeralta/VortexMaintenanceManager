@@ -22,6 +22,7 @@ CREATE TABLE `members` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
 -- --------------------------------------------------------
 
 --
@@ -63,6 +64,15 @@ CREATE TABLE `priorities` (
   `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `priorities`
+--
+
+INSERT INTO `priorities` (`id`, `name`) VALUES
+(1, 'High'),
+(2, 'Medium'),
+(3, 'Low');
+
 -- --------------------------------------------------------
 
 --
@@ -73,6 +83,15 @@ CREATE TABLE `statuses` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `statuses`
+--
+
+INSERT INTO `statuses` (`id`, `name`) VALUES
+(1, 'In progress'),
+(2, 'On standby'),
+(3, 'Closed');
 
 -- --------------------------------------------------------
 
@@ -217,13 +236,13 @@ ALTER TABLE `part_withdrawal_entries`
 -- AUTO_INCREMENT for table `priorities`
 --
 ALTER TABLE `priorities`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `statuses`
 --
 ALTER TABLE `statuses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `work_orders`

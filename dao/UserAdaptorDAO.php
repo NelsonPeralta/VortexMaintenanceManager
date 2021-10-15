@@ -1,9 +1,9 @@
 <?php
     class UserAdaptorDAO{
 
-        public $userDAO;
-        public $companyDAO;
-        public $memberDAO;
+        private $userDAO;
+        private $companyDAO;
+        private $memberDAO;
 
         public function __construct($_userDAO, $_companyDAO, $_memberDAO){
             $this->userDAO = $_userDAO;

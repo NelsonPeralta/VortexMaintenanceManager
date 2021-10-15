@@ -14,6 +14,7 @@
     
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="icon" href="sprites/vortex_logo.png">
     <script src="js/jquery.min.js"></script>
 </head>
 <body>
@@ -22,10 +23,10 @@
             header("Location: index.php");
             exit();
         }else{ include_once("partials/navigation-bar.php");?>
-            <button id="new-work-order-btn">New Work Order</button>
+            <button id="new-work-order-btn" onclick="newWorkOrder()">New Work Order</button>
 
             <section id="home-body">
-                <?php $req = $action->getWorkOrders(); ?>
+                <?php $req = $action->GetWorkOrders(); ?>
 
                 <table id="home-table">
                     <tr>
@@ -36,8 +37,8 @@
                         while($row = $req->fetch()){
                             
                             $workOrderId = $row["id"];
-                            $givenId = $row["given_id"];
-                            echo "<tr id='$workOrderId' class='work-order'> <th>$givenId</th> <th>A WO title</th></tr>";
+                            $generated_id = $row["generated_id"];
+                            echo "<tr id='$workOrderId' class='work-order'> <th>$generated_id</th> <th>A WO title</th></tr>";
                         }
                     ?>
                 </table>
@@ -47,7 +48,6 @@
     ?>
     <script>
         window.addEventListener('load', e =>{
-            document.getElementById("new-work-order-btn").addEventListener("click", newWorkOrder)
             document.addEventListener("click", clickListener)
 
         })
@@ -87,31 +87,7 @@
         }
 
         const newWorkOrder = () =>{
-            console.log("New Work Order")
-            let formData = new FormData();
-            formData.append('service', "get-number-of-work-orders")
-
-            fetch("ajax.php", {
-                method: "POST",
-                body: formData
-            }).then(response => {
-                if (response.ok) {
-                    return response.text();
-                } else {
-                    console.log("REQUEST FAILED, error: " + response.statusText);
-                }
-            }).then(data => {
-                console.log(data)
-                console.log(JSON.parse(data)["result"]["COUNT(id)"])
-
-                nbWO = JSON.parse(data)["result"]["COUNT(id)"]
-
-                if(nbWO >= 10)
-                    alert("You have reached your maximum number of Work Orders")
-                else
-                    window.open("work-order-instance.php")
-            })
-
+            window.open("work-order-instance.php")
         }
     </script>
 </body>

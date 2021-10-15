@@ -7,6 +7,7 @@
     <title>Login</title>
     <link rel="stylesheet" href="css/global.css">
     <script src="js/jquery.min.js"></script>
+    <link rel="icon" href="sprites/vortex_logo.png">
 </head>
 <body>
     <?php include_once("partials/navigation-bar.php"); ?>

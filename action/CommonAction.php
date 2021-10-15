@@ -2,6 +2,12 @@
     require_once("dao/GlobalConnectionDAO.php");
     require_once("dao/CompanyConnectionDAO.php");
 
+    // Requires DAOs in order to serialize in $_SESSION
+    require_once("dao/UserDAO.php");
+    require_once("dao/CompanyDAO.php");
+    require_once("dao/MemberDAO.php");
+    require_once("dao/UserAdaptorDAO.php");
+
     session_start();
 
     abstract class CommonAction{
