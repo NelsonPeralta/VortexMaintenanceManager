@@ -16,6 +16,7 @@
         if(isset($_GET["wogid"])){
             $workOrderId = $_GET["wogid"];
             echo  "<title>$workOrderId</title>";
+            $data = $action->execute();
         }else{
             echo  "<title>New Work Order</title>" ;
         }
@@ -31,7 +32,7 @@
             header("Location: index.php");
             exit();
         }else{ 
-            // var_dump($data);
+            var_dump($data);
             if(isset($_GET["wogid"])){
                 $workOrderId = $_GET["wogid"];
                 echo  "<h1 id='work-order-generated-id'>$workOrderId</h1>";
@@ -47,13 +48,13 @@
                         <?php
                         
                             echo "Supervisor: <select id='supervisor-select-element'>";
-                            if(isset($data["work-order"])){
-                                $supervisorId = $data["work-order"]->getSupervisor();
+                            if(isset($data["work-order-adaptor"])){
+                                $woAdaptorDAO = $data["work-order-adaptor"];
+                                $supervisorId = $woAdaptorDAO->GetSupervisorId();
 
-
-                                if($supervisorId != NULL && $supervisorId != "0"){
-                                    $supervisorName = $action->getEmployeeWithId($supervisorId)["name"];
-                                    $supervisorSurname = $action->getEmployeeWithId($supervisorId)["surname"];
+                                if((int)$woAdaptorDAO->GetSupervisorId() > 0){
+                                    $supervisorName = $woAdaptorDAO->GetSupervisorName();
+                                    $supervisorSurname = $woAdaptorDAO->GetSupervisorSurname();
                                     echo "<option value='$supervisorId'>$supervisorId - $supervisorName $supervisorSurname</option>";
                                 }else
                                     echo "<option value='0'></option>";
@@ -75,13 +76,14 @@
                         <?php
 
                             echo "Equipment: <select id='equipment-select-element'>";
-                            if(isset($data["work-order"])){
-                                $equipmentId = $data["work-order"]->getEquipment();
+                            if(isset($data["work-order-adaptor"])){
+                                $woAdaptorDAO = $data["work-order-adaptor"];
+                                $equipmentId = $data["work-order-adaptor"]->GetEquipmentId();
 
-                                if($equipmentId != NULL && $equipmentId != "0"){
-                                    $equipmentGivenId = $action->getEquipmentWithId($equipmentId)["tag"];
-                                    $equipmentName = $action->getEquipmentWithId($equipmentId)["name"];
-                                    echo "<option value='$equipmentId'>$equipmentGivenId - $equipmentName</option>";
+                                if((int)$woAdaptorDAO->GetEquipmentId() > 0){
+                                    $equipmentTag = $woAdaptorDAO->GetEquipmentTag();
+                                    $equipmentName = $woAdaptorDAO->GetEquipmentName();
+                                    echo "<option value='$equipmentId'>$equipmentTag - $equipmentName</option>";
                                 }else
                                         echo "<option value='0'></option>";
                             }else
@@ -104,13 +106,13 @@
                         <?php
                             $statusId = 0;
                             echo "Status: <select id='status-select-element'>";
-                            if(isset($data["work-order"])){
+                            if(isset($data["work-order-adaptor"])){
+                                $woAdaptorDAO = $data["work-order-adaptor"];
+                                $statusId = $woAdaptorDAO->GetStatusId();
 
-                                $statusId = $data["work-order"]->getStatus();
-
-                                if($statusId != NULL && $statusId != "0"){
-                                    $statusName = $action->getStatusWithId($statusId)["name"];
-                                    echo "<option value='$statusId'>$statusId - $statusName $statusSurname</option>";
+                                if((int)$woAdaptorDAO->GetStatusId() > 0){
+                                    $statusName = $woAdaptorDAO->GetStatusName();
+                                    echo "<option value='$statusId'>$statusId - $statusName</option>";
                                 }else
                                     echo "<option value='0'></option>";
                             }else
@@ -130,12 +132,12 @@
                         <?php
 
                             echo "Priority: <select id='priority-select-element'>";
-                            if(isset($data["work-order"])){
+                            if(isset($data["work-order-adaptor"])){
+                                $woAdaptorDAO = $data["work-order-adaptor"];
+                                $priorityId = $woAdaptorDAO->GetPriorityId();
 
-                                $priorityId = $data["work-order"]->getPriority();
-
-                                if($priorityId != NULL && $priorityId != "0"){
-                                    $priorityName = $action->getPriorityWithId($priorityId)["name"];
+                                if((int)$woAdaptorDAO->GetPriorityId() > 0){
+                                    $priorityName = $woAdaptorDAO->GetPriorityName();
                                     echo "<option value='$priorityId'>$priorityId - $priorityName</option>";
                                 }else
                                     echo "<option value='0'></option>";
@@ -169,8 +171,8 @@
                     echo "<p>Title</p>";
                     echo "<textarea rows='1' cols='100' id='work-order-instance-title' placeholder='Title'>";
 
-                    if(isset($data["work-order"])){
-                        $title = $data["work-order"]->getTitle();
+                    if(isset($data["work-order-adaptor"])){
+                        $title = $data["work-order-adaptor"]->GetTitle();
                         echo "$title";
                     }
                     echo "</textarea>";
@@ -178,8 +180,8 @@
                     echo "<p>Description</p>";
                     echo "<textarea rows='10' cols='100' id='work-order-instance-description' placeholder='Description'>";
 
-                    if(isset($data["work-order"])){
-                        $description = $data["work-order"]->getDescription();
+                    if(isset($data["work-order-adaptor"])){
+                        $description = $data["work-order-adaptor"]->GetDescription();
                         echo "$description";
                     }
                     echo "</textarea>";
@@ -217,6 +219,8 @@
         }
 
         const savewochanges = () =>{
+            wogid = document.getElementById("work-order-generated-id").innerHTML
+
             newTitle = document.getElementById("work-order-instance-title").value
             newDes = document.getElementById("work-order-instance-description").value
             
@@ -226,10 +230,12 @@
             newSta = document.getElementById("status-select-element").value
             newEqu = document.getElementById("equipment-select-element").value
 
-            console.log(newSup)
+            console.log(isNaN(wogid))
 
             let formData = new FormData();
             formData.append('service', "save-or-create-work-order")
+            formData.append("wogid", wogid)
+
             formData.append("title", newTitle)
             formData.append("description", newDes)
 
@@ -250,15 +256,17 @@
                     console.log("REQUEST FAILED, error: " + response.statusText);
                 }
             }).then(data => {
+                console.log(data)
                 data = JSON.parse(data)["result"]
 
                 if(data["error"] != "")
                         alert(data["error"])
                 else{
-                    alert("Enregistrement avec success!")
+                    console.log(data)
                     wogid = data["generated_id"]
-                    window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
-                    close()
+                    alert("Enregistrement avec success!" + wogid)
+                    // window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
+                    // close()
                 }
             })
         }

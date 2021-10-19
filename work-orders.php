@@ -38,7 +38,8 @@
                             
                             $workOrderId = $row["id"];
                             $generated_id = $row["generated_id"];
-                            echo "<tr id='$workOrderId' class='work-order'> <th>$generated_id</th> <th>A WO title</th></tr>";
+                            $title = $row["title"];
+                            echo "<tr id='$generated_id' class='work-order'> <th>$generated_id</th> <th>$title</th></tr>";
                         }
                     ?>
                 </table>
@@ -78,7 +79,7 @@
                 //     console.log(data)
                 // })
 
-                window.open("work-order-instance.php?woid=" + clickedDOM.id)
+                window.open("work-order-instance.php?wogid=" + clickedDOM.id)
             }
             console.log(clickedDOM)
             //if(elementDessousSouris.parentElement.className == "card")

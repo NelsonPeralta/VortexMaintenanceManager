@@ -6,7 +6,12 @@
     require_once("dao/UserDAO.php");
     require_once("dao/CompanyDAO.php");
     require_once("dao/MemberDAO.php");
+    require_once("dao/PriorityDAO.php");
+    require_once("dao/StatusDAO.php");
+    require_once("dao/EquipmentDAO.php");
+    require_once("dao/WorkOrderDAO.php");
     require_once("dao/UserAdaptorDAO.php");
+    require_once("dao/WorkOrderAdaptorDAO.php");
 
     session_start();
 

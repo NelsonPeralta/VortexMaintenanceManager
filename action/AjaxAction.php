@@ -162,11 +162,11 @@
             if($newTitle != ""){
 
                 
-                if(isset($_POST["wogeneratedid"])){
-                    $woid = $_POST["woid"];
+                if($_POST["wogid"] != "New Work Order"){
+                    $wogid = $_POST["wogid"];
+                    $result["generated_id"] = $wogid;
                     
-                    
-                    $req = $this->db->prepare("UPDATE work_orders SET title='$newTitle', description='$newDes', supervisor='$newSup', applicant='$newApp', responsable='$newRes', priority='$newPri', status='$newSta', equipment='$newEqu' WHERE id='$woid';");
+                    $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', description='$newDes', supervisor_id='$newSup', priority_id='$newPri', status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
                     $req->setFetchMode(PDO::FETCH_ASSOC);
                     $req->execute();
                 }else{
