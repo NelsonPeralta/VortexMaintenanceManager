@@ -126,7 +126,7 @@ INSERT INTO `statuses` (`id`, `name`) VALUES
 
 CREATE TABLE `work_orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `generated_id` char(9) DEFAULT NULL,
+  `generated_id` char(12) DEFAULT NULL,
   `supervisor_member_id` int(11) DEFAULT 0,
   `priority_id` int(11) DEFAULT 0,
   `status_id` int(11) DEFAULT 0,
