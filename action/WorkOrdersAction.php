@@ -63,11 +63,11 @@
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
             $wo = $req->fetch();
-            $woDAO = new WODAO($wo["id"], $wo["generated_id"], $wo["title"], $wo["description"] ,$wo["supervisor_id"], 
+            $woDAO = new WODAO($wo["id"], $wo["generated_id"], $wo["title"], $wo["description"] ,$wo["supervisor_member_id"], 
                 $wo["priority_id"], $wo["status_id"], $wo["equipment_id"], $wo["date_created"], 
                 $wo["date_finished"], $wo["date_start"]);
             
-            $supervisorId = $woDAO->GetSupervisorId();
+            $supervisorMemberId = $woDAO->GetSupervisorId();
             $priorityId = $woDAO->GetPriorityId();
             $statusId = $woDAO->GetStatusId();
             $equipmentId = $woDAO->GetEquipmentId();
@@ -76,21 +76,14 @@
             $priorityDAO = new PriorityDAO(0, 0);
             $statusDAO = new StatusDAO(0, 0);
             $equipmentDAO = new EquipmentDAO(0, 0, 0, 0);
-            // $this->makeglobalconnection();
-            // $req = $this->globaldb->prepare("SELECT * FROM users WHERE id='$supervisorId'");
-            // $req->setFetchMode(PDO::FETCH_ASSOC);
-            // $req->execute();
-            // $supervisorUser = $req->fetch();
-            // $supervisorUserDAO = new UserDAO($supervisorUser["id"], $supervisorUser["username"], 
-            //     $supervisorUser["email"], $supervisorUser["company"]);
 
-            if((int)$supervisorId > 0){
-                $req = $this->companydb->prepare("SELECT * FROM members WHERE user_id='$supervisorId'");
+            if((int)$supervisorMemberId > 0){
+                $req = $this->companydb->prepare("SELECT * FROM members WHERE id='$supervisorMemberId'");
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
                 $supervisorMember = $req->fetch();
-                $supervisorMemberDAO = new MemberDAO($supervisorMember["id"], $supervisorMember["name"], 
-                $supervisorMember["surname"], $supervisorMember["user_id"]);
+                $supervisorMemberDAO = new MemberDAO($supervisorMember["id"], 
+                    $supervisorMember["name"], $supervisorMember["surname"], $supervisorMember["user_id"]);
             }
 
             if((int)$priorityId > 0){
@@ -98,7 +91,7 @@
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
                 $priority = $req->fetch();
-                $priorityDAO = new MemberDAO($priority["id"], $priority["name"]);
+                $priorityDAO = new PriorityDAO($priority["id"], $priority["name"]);
             }
 
             if((int)$statusId > 0){

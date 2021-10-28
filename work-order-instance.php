@@ -27,7 +27,6 @@
 </head>
 <body>
     <?php
-        include_once("partials/navigation-bar.php");
         if(!isset($data["user"])){
             header("Location: index.php");
             exit();

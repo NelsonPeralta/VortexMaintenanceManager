@@ -9,6 +9,15 @@ CREATE TABLE `equipments` (
   `description` varchar(1024) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `equipments`
+--
+
+INSERT INTO `equipments` (`id`, `tag`, `name`, `description`) VALUES
+(1, 'ABC-123', 'Filling Machine', 'A machine that fills bottles.'),
+(2, 'DEF-456', 'Capper Machine', 'A machine that seals bottles with caps.'),
+(3, 'GHI-789', 'Packing Machine', 'A machine that packs boxes of filled bottles.');
+
 -- --------------------------------------------------------
 
 --
@@ -22,6 +31,13 @@ CREATE TABLE `members` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `members`
+--
+
+INSERT INTO `members` (`id`, `name`, `surname`, `user_id`) VALUES
+(2, 'Smith', 'John', 0),
+(3, 'Ross', 'Bob', 0);
 
 -- --------------------------------------------------------
 
@@ -31,12 +47,21 @@ CREATE TABLE `members` (
 
 CREATE TABLE `parts` (
   `id` int(11) NOT NULL,
-  `generated_id` int(11) NOT NULL,
-  `name` int(11) NOT NULL,
-  `description` int(11) DEFAULT NULL,
+  `generated_id` char(9) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `description` varchar(1000) DEFAULT NULL,
   `stock` int(11) DEFAULT 0,
-  `price` int(11) DEFAULT 0
+  `price` decimal(10, 2) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `parts`
+--
+
+INSERT INTO `parts` (`id`, `generated_id`, `name`, `description`, `stock`, `price`) VALUES
+(1, 'PA-000001', 'Screw', 'A steel screw', 100, 0.05),
+(2, 'PA-000002', 'Chain', 'A long chain', 3, 10.05),
+(3, 'PA-000003', 'Valve', 'A sturdy valve', 25, 85);
 
 -- --------------------------------------------------------
 
@@ -102,7 +127,7 @@ INSERT INTO `statuses` (`id`, `name`) VALUES
 CREATE TABLE `work_orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `generated_id` char(9) DEFAULT NULL,
-  `supervisor_id` int(11) DEFAULT 0,
+  `supervisor_member_id` int(11) DEFAULT 0,
   `priority_id` int(11) DEFAULT 0,
   `status_id` int(11) DEFAULT 0,
   `equipment_id` int(11) DEFAULT NULL,
@@ -236,13 +261,13 @@ ALTER TABLE `part_withdrawal_entries`
 -- AUTO_INCREMENT for table `priorities`
 --
 ALTER TABLE `priorities`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `statuses`
 --
 ALTER TABLE `statuses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `work_orders`

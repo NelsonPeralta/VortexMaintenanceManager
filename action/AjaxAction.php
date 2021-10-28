@@ -39,7 +39,7 @@
                 
                 
             }catch (PDOException $e){
-                $result["error"] = "Database existe deja";
+                $result["error"] = "Compagnie existe deja";
             }
             
             try{
@@ -166,7 +166,9 @@
                     $wogid = $_POST["wogid"];
                     $result["generated_id"] = $wogid;
                     
-                    $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', description='$newDes', supervisor_id='$newSup', priority_id='$newPri', status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
+                    $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
+                        description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
+                        status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
                     $req->setFetchMode(PDO::FETCH_ASSOC);
                     $req->execute();
                 }else{
