@@ -15,26 +15,6 @@
             $this->equipmentDAO = $_equipmentDAO;
         }
 
-        // public function GetWorkOrderDAO(){
-        //     return $this->woDAO;
-        // }
-
-        // public function GetSupervisorMemberDAO(){
-        //     return $this->supervisorMemberDAO;
-        // }
-
-        // public function GetPriorityDAO(){
-        //     return $this->priorityDAO;
-        // }
-
-        // public function GetStatusDAO(){
-        //     return $this->statusDAO;
-        // }
-
-        // public function GetEquipmentDAO(){
-        //     return $this->equipmentDAO;
-        // }
-
         // ---------------------------------------
         // ----- GETTERS WorkOrderDAO -----
         public function GetTitle(){
@@ -70,7 +50,7 @@
         }
 
         public function GetEquipmentTag(){
-            return $this->equipmentDAO->GetTage();
+            return $this->equipmentDAO->GetTag();
         }
 
         public function GetEquipmentName(){
