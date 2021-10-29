@@ -11,16 +11,8 @@
             $this->memberDAO = $_memberDAO;
         }
 
-        public function GetUserDAO(){
-            return $this->userDAO;
-        }
-
-        public function GetCompanyDAO(){
-            return $this->companyDAO;
-        }
-
-        public function GetMemberDAO(){
-            return $this->memberDAO;
+        public function GetCompanyName(){
+            return $this->companyDAO->GetName();
         }
     }
 ?>

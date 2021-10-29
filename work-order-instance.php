@@ -186,6 +186,10 @@
                     echo "</textarea>";
                 ?>
             </section>
+            <fieldset id="work-order-workers-fieldset">
+                <legend>Workers</legend>
+                <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
+            </fieldset>
 
             <div>
                 <button id="work-order-save-btn" onclick="savewochanges()">Save</button>
@@ -198,7 +202,6 @@
     <script>
         window.addEventListener('load', e =>{
             document.addEventListener("click", clickListener)
-
         })
 
         const clickListener = (event) =>{
@@ -215,6 +218,52 @@
             //if(elementDessousSouris.parentElement.className == "card")
             //    elementDessousSouris = elementDessousSouris.parentElement
             
+        }
+
+        const addworkerrow = () =>{
+            console.log("Added Worker Row")
+
+            workersFieldset = document.getElementById("work-order-workers-fieldset")
+            row = document.createElement("select")
+            row.classList.add("work-order-worker-row")
+            row.innerHTML = "test"
+
+            workersFieldset.appendChild(row)
+
+            let formData = new FormData();
+            formData.append('service', "add-worker-row")
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                console.log("RAW DATA:" + data)
+                data = JSON.parse(data)["result"]
+                console.log(data)
+                DOMLine = data["DOMLine"]
+
+                for (let i = 0; i < data["workers"].length; i++){
+                    console.log(data["workers"][i])
+
+
+                }
+
+                // foreach row in data["workers"]{
+                //     console.log(row)
+                // }
+
+                // row = document.createElement(DOMLine)
+                let row = new DOMParser().parseFromString(DOMLine, "text/html")
+
+                workersFieldset.appendChild(row.documentElement)
+                // row.body.firstChild
+            })
         }
 
         const savewochanges = () =>{

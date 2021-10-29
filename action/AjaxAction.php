@@ -16,8 +16,11 @@
                     return $this->login();
                 }else if($_POST["service"] == "logout"){
                     return $this->logout();
-                }else if($_POST["service"] == "save-or-create-work-order")
+                }else if($_POST["service"] == "save-or-create-work-order"){
                     return $this->saveorcreateworkorder();
+                }else if($_POST["service"] == "add-worker-row"){
+                    return $this->GetListOfMembers();
+                }
             }
         }
 
@@ -146,7 +149,7 @@
         }
 
         function saveorcreateworkorder(){
-            $this->makecompanyconnection($_SESSION["user"]->GetCompanyDAO()->GetName());
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
 
             $result["error"] = "";
 
@@ -198,6 +201,29 @@
             }else{
                 $result["error"] = "Le titre ne doit pas etre vide";
             }
+            return compact("result");
+        }
+
+        function GetListOfMembers(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $req = $this->companydb->prepare("SELECT * FROM members;");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            $listofworkers = [];
+            $DOMLine = "";
+            while($row = $req->fetch()){
+                array_push($listofworkers, $row);
+
+                $workerId = $row["id"];
+                $DOMLine .= "<p>$workerId</p><br>";
+            }
+
+            $result["workers"] = $listofworkers;
+            $result["DOMLine"] = $DOMLine;
+            $result["service"] = "Add Worker Row";
+
             return compact("result");
         }
     }

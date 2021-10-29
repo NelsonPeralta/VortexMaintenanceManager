@@ -5,7 +5,7 @@
 
         protected function executeAction() {
             $data = NULL;
-            $companyname = $_SESSION["user"]->GetCompanyDAO()->GetName();
+            $companyname = $_SESSION["user"]->GetCompanyName();
             $this->makecompanyconnection($companyname);
 
             if(isset($_GET["wogid"])){
