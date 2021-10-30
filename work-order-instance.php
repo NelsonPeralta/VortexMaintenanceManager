@@ -186,7 +186,7 @@
                     echo "</textarea>";
                 ?>
             </section>
-            <fieldset id="work-order-workers-fieldset">
+            <fieldset id="work-order-workers-fieldset" class="align-horizontal">
                 <legend>Workers</legend>
                 <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
             </fieldset>
@@ -224,11 +224,6 @@
             console.log("Added Worker Row")
 
             workersFieldset = document.getElementById("work-order-workers-fieldset")
-            row = document.createElement("select")
-            row.classList.add("work-order-worker-row")
-            row.innerHTML = "test"
-
-            workersFieldset.appendChild(row)
 
             let formData = new FormData();
             formData.append('service', "add-worker-row")
@@ -248,20 +243,39 @@
                 console.log(data)
                 DOMLine = data["DOMLine"]
 
-                for (let i = 0; i < data["workers"].length; i++){
-                    console.log(data["workers"][i])
-
-
-                }
 
                 // foreach row in data["workers"]{
                 //     console.log(row)
                 // }
 
                 // row = document.createElement(DOMLine)
-                let row = new DOMParser().parseFromString(DOMLine, "text/html")
 
-                workersFieldset.appendChild(row.documentElement)
+                selectDOM = document.createElement("select")
+                selectDOM.classList.add("work-order-worker-select")
+                workersFieldset.appendChild(selectDOM)
+
+                emptyOptionDOM = document.createElement("option")
+                emptyOptionDOM.value = 0
+                selectDOM.appendChild(emptyOptionDOM)
+
+                for (let i = 0; i < data["workers"].length; i++){
+                    console.log(data["workers"][i])
+
+                    worker = data["workers"][i]
+                    console.log(worker)
+
+
+                    optionDOM = document.createElement("option")
+                    optionDOM.innerHTML = worker["surname"] +  " " + worker["name"]
+                    optionDOM.value = worker["id"]
+                    optionDOM.classList.add("work-order-worker-option")
+
+                    selectDOM.appendChild(optionDOM)
+                    selectDOM.appendChild(document.createElement("br"))
+                }
+
+                // let row = new DOMParser().parseFromString(DOMLine, "text/html")
+                // selectDOM.appendChild(row.documentElement)
                 // row.body.firstChild
             })
         }
@@ -293,6 +307,18 @@
             formData.append("status", newSta)
             formData.append("equipment", newEqu)
 
+            workersDOM = document.getElementsByClassName("work-order-worker-select")
+            listOfWorkers = []
+
+            for (i = 0; i < workersDOM.length; i++){
+                if(workersDOM[i].value != 0)
+                    listOfWorkers.push(workersDOM[i].value)
+            }
+            console.log(listOfWorkers)
+
+            for (var i = 0; i < listOfWorkers.length; i++) {
+                formData.append('listofworkers[]', listOfWorkers[i]);
+            }
 
             fetch("ajax.php", {
                 method: "POST",

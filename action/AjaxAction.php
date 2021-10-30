@@ -161,19 +161,42 @@
             $newPri = $_POST["priority"];
             $newSta = $_POST["status"];
             $newEqu = $_POST["equipment"];
+            $listofworkers = $_POST["listofworkers"];
 
+            
             if($newTitle != ""){
-
+                
                 
                 if($_POST["wogid"] != "New Work Order"){
                     $wogid = $_POST["wogid"];
                     $result["generated_id"] = $wogid;
+
+                    // $req = $this->companydb->prepare("SELECT id FROM work_orders WHERE generated_id='$generated_id';");
+                    // $req->setFetchMode(PDO::FETCH_ASSOC);
+                    // $req->execute();        
+                    // $woid = $req->fetch();
+                    
                     
                     $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
                         description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
                         status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
                     $req->setFetchMode(PDO::FETCH_ASSOC);
                     $req->execute();
+
+                    $req = $this->companydb->prepare("DELETE FROM work_orders_x_workers WHERE 
+                        work_order_id=(SELECT id FROM work_orders WHERE generated_id='$wogid');");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+
+                    $result["listofworkers"] = $listofworkers;
+                    $result["listofworkerstype"] = gettype($listofworkers);
+                    for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
+                        $tempWorkerId = $listofworkers[$x];
+                        $req = $this->companydb->prepare("INSERT INTO work_orders_x_workers(work_order_id, worker_id) 
+                            VALUES ((SELECT id FROM work_orders WHERE generated_id='$wogid'), '$tempWorkerId');");
+                        $req->setFetchMode(PDO::FETCH_ASSOC);
+                        $req->execute();
+                    }
                 }else{
                     $result["info"] = "Creating Work Order";
                     
@@ -216,8 +239,8 @@
             while($row = $req->fetch()){
                 array_push($listofworkers, $row);
 
-                $workerId = $row["id"];
-                $DOMLine .= "<p>$workerId</p><br>";
+                // $workerId = $row["id"];
+                // $DOMLine .= "<option>$workerId</option>";
             }
 
             $result["workers"] = $listofworkers;

@@ -36,8 +36,8 @@ CREATE TABLE `members` (
 --
 
 INSERT INTO `members` (`id`, `name`, `surname`, `user_id`) VALUES
-(1, 'Smith', 'John', 0),
-(2, 'Ross', 'Bob', 0);
+(1, 'John', 'Smith', 0),
+(2, 'Bob', 'Ross', 0);
 
 -- --------------------------------------------------------
 
