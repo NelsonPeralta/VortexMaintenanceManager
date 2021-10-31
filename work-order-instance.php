@@ -188,6 +188,40 @@
             </section>
             <fieldset id="work-order-workers-fieldset" class="align-horizontal">
                 <legend>Workers</legend>
+                <?php 
+                    if(isset($_GET["wogid"])){
+                        $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
+                        var_dump($listofworkers);
+                    }
+                ?>
+                <?php $req = $action->GetEquipments(); ?>
+                <?php
+
+                    echo "Equipment: <select id='equipment-select-element'>";
+                    if(isset($data["work-order-adaptor"])){
+                        $woAdaptorDAO = $data["work-order-adaptor"];
+                        $equipmentId = $data["work-order-adaptor"]->GetEquipmentId();
+
+                        if((int)$woAdaptorDAO->GetEquipmentId() > 0){
+                            $equipmentTag = $woAdaptorDAO->GetEquipmentTag();
+                            $equipmentName = $woAdaptorDAO->GetEquipmentName();
+                            echo "<option value='$equipmentId'>$equipmentTag - $equipmentName</option>";
+                        }else
+                                echo "<option value='0'></option>";
+                    }else
+                        echo "<option value='0'></option>";
+
+                    while($row = $req->fetch()){
+                        $_equipmentId = $row['id'];
+                        $givenId = $row['tag'];
+                        $name = $row['name'];
+                        $description = $row['description'];
+
+                        if($equipmentId != $_equipmentId)
+                            echo "<option value='$_equipmentId'>$givenId - $name</option>";
+                    }
+                ?>
+                </select>
                 <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
             </fieldset>
 

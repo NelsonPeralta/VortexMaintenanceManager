@@ -58,6 +58,29 @@
             return $req;
         }
 
+        function GetListOfWorkers($generated_id){
+            $listOfWorkers = [];
+            $req = $this->companydb->prepare("SELECT * FROM work_orders_x_workers 
+                WHERE (SELECT id FROM work_orders WHERE generated_id='$generated_id')");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            while($row = $req->fetch()){
+                $memberid = $row["worker_id"];
+
+                $wreq = $this->companydb->prepare("SELECT * FROM members WHERE id='$memberid'");
+                $wreq->setFetchMode(PDO::FETCH_ASSOC);
+                $wreq->execute();
+                $member = $wreq->fetch();
+                $memberDAO = new MemberDAO($member["id"], 
+                    $member["name"], $member["surname"], $member["user_id"]);
+
+                array_push($listOfWorkers, $memberDAO);
+            }
+
+            return $listOfWorkers;
+        }
+
         function GetWorkOrderWithGeneratedId($gid){
             $req = $this->companydb->prepare("SELECT * FROM work_orders WHERE generated_id='$gid'");
             $req->setFetchMode(PDO::FETCH_ASSOC);

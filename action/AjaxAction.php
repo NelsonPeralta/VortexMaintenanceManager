@@ -183,20 +183,7 @@
                     $req->setFetchMode(PDO::FETCH_ASSOC);
                     $req->execute();
 
-                    $req = $this->companydb->prepare("DELETE FROM work_orders_x_workers WHERE 
-                        work_order_id=(SELECT id FROM work_orders WHERE generated_id='$wogid');");
-                    $req->setFetchMode(PDO::FETCH_ASSOC);
-                    $req->execute();
-
-                    $result["listofworkers"] = $listofworkers;
-                    $result["listofworkerstype"] = gettype($listofworkers);
-                    for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
-                        $tempWorkerId = $listofworkers[$x];
-                        $req = $this->companydb->prepare("INSERT INTO work_orders_x_workers(work_order_id, worker_id) 
-                            VALUES ((SELECT id FROM work_orders WHERE generated_id='$wogid'), '$tempWorkerId');");
-                        $req->setFetchMode(PDO::FETCH_ASSOC);
-                        $req->execute();
-                    }
+                    $this->UpdateWorkers($wogid, $listofworkers);
                 }else{
                     $result["info"] = "Creating Work Order";
                     
@@ -220,6 +207,8 @@
                     $req->execute();
 
                     $result["generated_id"] = $generated_id;
+
+                    $this->UpdateWorkers($generated_id, $listofworkers);
                 }
             }else{
                 $result["error"] = "Le titre ne doit pas etre vide";
@@ -248,6 +237,21 @@
             $result["service"] = "Add Worker Row";
 
             return compact("result");
+        }
+
+        function UpdateWorkers($generated_id, $listofworkers){
+            $req = $this->companydb->prepare("DELETE FROM work_orders_x_workers WHERE 
+                        work_order_id=(SELECT id FROM work_orders WHERE generated_id='$generated_id');");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
+                $tempWorkerId = $listofworkers[$x];
+                $req = $this->companydb->prepare("INSERT INTO work_orders_x_workers(work_order_id, worker_id) 
+                    VALUES ((SELECT id FROM work_orders WHERE generated_id='$generated_id'), '$tempWorkerId');");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+            }
         }
     }
 ?>
