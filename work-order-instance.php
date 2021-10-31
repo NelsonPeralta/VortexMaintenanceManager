@@ -188,41 +188,43 @@
             </section>
             <fieldset id="work-order-workers-fieldset" class="align-horizontal">
                 <legend>Workers</legend>
+                <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
                 <?php 
                     if(isset($_GET["wogid"])){
                         $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
-                        var_dump($listofworkers);
+                        $listofmembers = [];
+
+                        if(count($listofworkers) == 0){
+                            return;
+                        }
+
+                        $req = $action->GetMembers();
+                        while($row = $req->fetch()){
+
+                            array_push($listofmembers, $row);
+                        }
+
+                        
+                        
+                        for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
+                            echo "<select class='work-order-worker-select'>";
+                            $workername = $listofworkers[$x]->GetName();
+                            $workersurname = $listofworkers[$x]->GetSurname();
+                            $workerid = $listofworkers[$x]->GetId();
+                            echo "<option value=$workerid>$workersurname $workername</option>";
+                            echo "<option value=0>-- None --</option>";
+                            for ($y = 0; $y <= count($listofmembers) - 1; $y++){
+                                if($listofmembers[$y]["id"] != $workerid){
+                                    $membername = $listofmembers[$y]["name"];
+                                    $membersurname = $listofmembers[$y]["surname"];
+                                    $memberid = $listofmembers[$y]["id"];
+                                    echo "<option value=$memberid>$membersurname $membername</option>";
+                                }
+                            }
+                            echo "</select>";
+                        }
                     }
                 ?>
-                <?php $req = $action->GetEquipments(); ?>
-                <?php
-
-                    echo "Equipment: <select id='equipment-select-element'>";
-                    if(isset($data["work-order-adaptor"])){
-                        $woAdaptorDAO = $data["work-order-adaptor"];
-                        $equipmentId = $data["work-order-adaptor"]->GetEquipmentId();
-
-                        if((int)$woAdaptorDAO->GetEquipmentId() > 0){
-                            $equipmentTag = $woAdaptorDAO->GetEquipmentTag();
-                            $equipmentName = $woAdaptorDAO->GetEquipmentName();
-                            echo "<option value='$equipmentId'>$equipmentTag - $equipmentName</option>";
-                        }else
-                                echo "<option value='0'></option>";
-                    }else
-                        echo "<option value='0'></option>";
-
-                    while($row = $req->fetch()){
-                        $_equipmentId = $row['id'];
-                        $givenId = $row['tag'];
-                        $name = $row['name'];
-                        $description = $row['description'];
-
-                        if($equipmentId != $_equipmentId)
-                            echo "<option value='$_equipmentId'>$givenId - $name</option>";
-                    }
-                ?>
-                </select>
-                <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
             </fieldset>
 
             <div>
@@ -289,6 +291,7 @@
                 workersFieldset.appendChild(selectDOM)
 
                 emptyOptionDOM = document.createElement("option")
+                emptyOptionDOM.innerHTML = "-- None --"
                 emptyOptionDOM.value = 0
                 selectDOM.appendChild(emptyOptionDOM)
 
@@ -300,7 +303,7 @@
 
 
                     optionDOM = document.createElement("option")
-                    optionDOM.innerHTML = worker["surname"] +  " " + worker["name"]
+                    optionDOM.innerHTML = worker["name"] +  " " + worker["surname"]
                     optionDOM.value = worker["id"]
                     optionDOM.classList.add("work-order-worker-option")
 
@@ -373,8 +376,8 @@
                     console.log(data)
                     wogid = data["generated_id"]
                     alert("Enregistrement avec success!" + wogid)
-                    // window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
-                    // close()
+                    window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
+                    close()
                 }
             })
         }
