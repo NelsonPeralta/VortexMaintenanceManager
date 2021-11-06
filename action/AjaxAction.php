@@ -20,6 +20,10 @@
                     return $this->saveorcreateworkorder();
                 }else if($_POST["service"] == "add-worker-row"){
                     return $this->GetListOfMembers();
+                }else if($_POST["service"] == "add-new-employee"){
+                    return $this->AddNewEmployee();
+                }else if($_POST["service"] == "delete-member"){
+                    return $this->DeleteMember();
                 }
             }
         }
@@ -252,6 +256,50 @@
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
             }
+        }
+
+        function AddNewEmployee(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $surname = $_POST["surname"];
+
+            $req = $this->companydb->prepare("INSERT INTO members (name, surname) VALUES('$name', '$surname')");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            $req = $this->companydb->prepare("SELECT * FROM members WHERE name='$name' AND surname='$surname'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+            $result["newmemberinfo"] = $req->fetch();
+
+            return compact("result");
+        }
+
+        function DeleteMember(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+            $this->makeglobalconnection();
+
+            $result["error"] = "";
+
+            $memberid = $_POST["id"];
+            $userid = 0;
+
+            $req = $this->companydb->prepare("SELECT user_id FROM members WHERE id='$memberid'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+            $userid = $req->fetch();
+
+            $req = $this->companydb->prepare("DELETE FROM members WHERE 
+                id='$memberid'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            $req = $this->globaldb->prepare("DELETE FROM users WHERE id='$userid'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
         }
     }
 ?>
