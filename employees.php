@@ -84,6 +84,8 @@
 
         const OpenMember = (memberid) =>{
             console.log("Open Memeber " + memberid)
+
+            window.open("employee-instance.php?mid=" + memberid)
         }
 
         const DeleteMember = (memberid) =>{
@@ -105,7 +107,7 @@
                 }).then(data => {
                     console.log(data)
                     alert("Employee deleted successfully")
-                    // location.reload()
+                    location.reload()
                 })
         }
     </script>

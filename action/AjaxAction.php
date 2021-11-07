@@ -24,6 +24,8 @@
                     return $this->AddNewEmployee();
                 }else if($_POST["service"] == "delete-member"){
                     return $this->DeleteMember();
+                }else if($_POST["service"] == "save-member-info"){
+                    return $this->SaveMemberInfo();
                 }
             }
         }
@@ -300,6 +302,60 @@
             $req = $this->globaldb->prepare("DELETE FROM users WHERE id='$userid'");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
+        }
+
+        function SaveMemberInfo(){
+            $this->makeglobalconnection();
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $surname = $_POST["surname"];
+            $username = $_POST["username"];
+            $password = hash('sha512', $_POST["password"]);
+            $email = $_POST["email"];
+            $companyid = $_SESSION["user"]->GetCompanyId();
+            
+            $req = $this->companydb->prepare("UPDATE members 
+                SET name='$name', surname='$surname' 
+                WHERE name='$name' AND surname='$surname';");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            $req = $this->companydb->prepare("SELECT user_id FROM members WHERE name='$name' AND surname='$surname';");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+            $userid = $req->fetch()["user_id"];
+
+            $result["userid"] = $userid;
+
+            if((int)$userid == 0){
+                $req = $this->globaldb->prepare("INSERT INTO users (username, email, password, company) 
+                VALUES('$username', '$email', '$password', '$companyid')");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+               
+                $req = $this->globaldb->prepare("SELECT LAST_INSERT_ID();");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $req = $req->fetch();
+                $uid = $req["LAST_INSERT_ID()"];
+
+                $req = $this->companydb->prepare("UPDATE members 
+                SET user_id='$uid'
+                WHERE name='$name' AND surname='$surname';");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+            }else{
+                $req = $this->globaldb->prepare("UPDATE users 
+                    SET username='$username', email='$email', password='$password', company='$companyid'
+                    WHERE id='$userid';");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+            }
+
+            return compact("result");
         }
     }
 ?>
