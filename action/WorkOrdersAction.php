@@ -72,6 +72,9 @@
                 $wreq->setFetchMode(PDO::FETCH_ASSOC);
                 $wreq->execute();
                 $member = $wreq->fetch();
+                if($member == FALSE){
+                    return;
+                }
                 $memberDAO = new MemberDAO($member["id"], 
                     $member["name"], $member["surname"], $member["user_id"]);
 

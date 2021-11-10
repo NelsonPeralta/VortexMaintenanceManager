@@ -26,6 +26,8 @@
                     return $this->DeleteMember();
                 }else if($_POST["service"] == "save-member-info"){
                     return $this->SaveMemberInfo();
+                }else if($_POST["service"] == "delete-work-order"){
+                    return $this->DeleteWorkOrder();
                 }
             }
         }
@@ -331,22 +333,28 @@
             $result["userid"] = $userid;
 
             if((int)$userid == 0){
-                $req = $this->globaldb->prepare("INSERT INTO users (username, email, password, company) 
-                VALUES('$username', '$email', '$password', '$companyid')");
-                $req->setFetchMode(PDO::FETCH_ASSOC);
-                $req->execute();
-               
-                $req = $this->globaldb->prepare("SELECT LAST_INSERT_ID();");
-                $req->setFetchMode(PDO::FETCH_ASSOC);
-                $req->execute();
-                $req = $req->fetch();
-                $uid = $req["LAST_INSERT_ID()"];
+                try{
+                    $req = $this->globaldb->prepare("INSERT INTO users (username, email, password, company) 
+                    VALUES('$username', '$email', '$password', '$companyid')");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                   
+                    $req = $this->globaldb->prepare("SELECT LAST_INSERT_ID();");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                    $req = $req->fetch();
+                    $uid = $req["LAST_INSERT_ID()"];
+    
+                    $req = $this->companydb->prepare("UPDATE members 
+                    SET user_id='$uid'
+                    WHERE name='$name' AND surname='$surname';");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
 
-                $req = $this->companydb->prepare("UPDATE members 
-                SET user_id='$uid'
-                WHERE name='$name' AND surname='$surname';");
-                $req->setFetchMode(PDO::FETCH_ASSOC);
-                $req->execute();
+                }catch (PDOException $e){
+                    $result["error"] = "Ce nom d'utilisateur ou email est deja pris";
+                    $this->globaldb->rollBack();
+                }
             }else{
                 $req = $this->globaldb->prepare("UPDATE users 
                     SET username='$username', email='$email', password='$password', company='$companyid'
@@ -354,6 +362,28 @@
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
             }
+
+            return compact("result");
+        }
+
+        function DeleteWorkOrder(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $wogid = $_POST["wogid"];
+            $result["error"] = "";
+            $result["service"] = "Delete work order $wogid";
+
+
+            // $req = $this->companydb->prepare("UPDATE work_orders 
+            //         SET open='0'
+            //         WHERE generated_id='$wogid';");
+            //     $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     $req->execute();
+
+            $req = $this->companydb->prepare("DELETE FROM work_orders 
+                WHERE generated_id='$wogid';");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
 
             return compact("result");
         }

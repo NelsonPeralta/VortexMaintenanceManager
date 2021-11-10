@@ -194,31 +194,32 @@
                         $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
                         $listofmembers = [];
 
-                        if(count($listofworkers) == 0){
-                            return;
-                        }
-
-                        $req = $action->GetMembers();
-                        while($row = $req->fetch()){
-
-                            array_push($listofmembers, $row);
-                        }
-
+                        if($listofworkers != NULL){
+                            
+                            
+                            $req = $action->GetMembers();
+                            while($row = $req->fetch()){
+                                
+                                array_push($listofmembers, $row);
+                            }
+                            
                         
-                        
-                        for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
-                            echo "<select class='work-order-worker-select'>";
-                            $workername = $listofworkers[$x]->GetName();
-                            $workersurname = $listofworkers[$x]->GetSurname();
-                            $workerid = $listofworkers[$x]->GetId();
-                            echo "<option value=$workerid>$workersurname $workername</option>";
-                            echo "<option value=0>-- None --</option>";
-                            for ($y = 0; $y <= count($listofmembers) - 1; $y++){
-                                if($listofmembers[$y]["id"] != $workerid){
-                                    $membername = $listofmembers[$y]["name"];
-                                    $membersurname = $listofmembers[$y]["surname"];
-                                    $memberid = $listofmembers[$y]["id"];
-                                    echo "<option value=$memberid>$membersurname $membername</option>";
+                            
+                            for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
+                                echo "<select class='work-order-worker-select'>";
+                                $workername = $listofworkers[$x]->GetName();
+                                $workersurname = $listofworkers[$x]->GetSurname();
+                                $workerid = $listofworkers[$x]->GetId();
+                                echo "<option value=$workerid>$workersurname $workername</option>";
+                                echo "<option value=0>-- None --</option>";
+                                
+                                for ($y = 0; $y <= count($listofmembers) - 1; $y++){
+                                    if($listofmembers[$y]["id"] != $workerid){
+                                        $membername = $listofmembers[$y]["name"];
+                                        $membersurname = $listofmembers[$y]["surname"];
+                                        $memberid = $listofmembers[$y]["id"];
+                                        echo "<option value=$memberid>$membersurname $membername</option>";
+                                    }
                                 }
                             }
                             echo "</select>";
@@ -229,7 +230,12 @@
 
             <div>
                 <button id="work-order-save-btn" onclick="savewochanges()">Save</button>
-                <button id="work-order-delete-btn">Delete</button>
+                <?php
+                    if(isset($_GET["wogid"])){
+                        $wogid = $_GET["wogid"];
+                        echo "<button id='work-order-delete-btn' onclick=DeleteWorkOrder('$wogid')>Delete</button>";
+                    }
+                ?>
             </div>
             
     <?php
@@ -346,6 +352,7 @@
 
             workersDOM = document.getElementsByClassName("work-order-worker-select")
             listOfWorkers = []
+            formData.append('listofworkers[]', listOfWorkers)
 
             for (i = 0; i < workersDOM.length; i++){
                 if(workersDOM[i].value != 0)
@@ -377,6 +384,34 @@
                     wogid = data["generated_id"]
                     alert("Enregistrement avec success!" + wogid)
                     window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
+                    close()
+                }
+            })
+        }
+
+        const DeleteWorkOrder = (wogid) =>{
+            console.log(wogid)
+            let formData = new FormData();
+            formData.append("service", "delete-work-order")
+            formData.append("wogid", wogid)
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                console.log(data)
+                data = JSON.parse(data)["result"]
+
+                if(data["error"] != "")
+                        alert(data["error"])
+                else{
+                    alert("Suppression avec success!")
                     close()
                 }
             })
