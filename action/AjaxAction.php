@@ -28,6 +28,8 @@
                     return $this->SaveMemberInfo();
                 }else if($_POST["service"] == "delete-work-order"){
                     return $this->DeleteWorkOrder();
+                }else if($_POST["service"] == "close-work-order"){
+                    return $this->CloseWorkOrder();
                 }
             }
         }
@@ -382,6 +384,23 @@
 
             $req = $this->companydb->prepare("DELETE FROM work_orders 
                 WHERE generated_id='$wogid';");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            return compact("result");
+        }
+
+        function CloseWorkOrder(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $wogid = $_POST["wogid"];
+            $result["error"] = "";
+            $result["service"] = "Closing work order $wogid";
+
+
+            $req = $this->companydb->prepare("UPDATE work_orders 
+                    SET open=0
+                    WHERE generated_id='$wogid';");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
 

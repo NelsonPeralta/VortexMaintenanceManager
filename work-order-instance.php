@@ -31,7 +31,6 @@
             header("Location: index.php");
             exit();
         }else{ 
-            var_dump($data);
             if(isset($_GET["wogid"])){
                 $workOrderId = $_GET["wogid"];
                 echo  "<h1 id='work-order-generated-id'>$workOrderId</h1>";
@@ -234,6 +233,7 @@
                     if(isset($_GET["wogid"])){
                         $wogid = $_GET["wogid"];
                         echo "<button id='work-order-delete-btn' onclick=DeleteWorkOrder('$wogid')>Delete</button>";
+                        echo "<button id='work-order-close-btn' onclick=CloseWorkOrder('$wogid')>Close</button>";
                     }
                 ?>
             </div>
@@ -412,6 +412,34 @@
                         alert(data["error"])
                 else{
                     alert("Suppression avec success!")
+                    close()
+                }
+            })
+        }
+
+        const CloseWorkOrder = (wogid) =>{
+            console.log(wogid)
+            let formData = new FormData();
+            formData.append("service", "close-work-order")
+            formData.append("wogid", wogid)
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                console.log(data)
+                data = JSON.parse(data)["result"]
+
+                if(data["error"] != "")
+                        alert(data["error"])
+                else{
+                    alert("Fermeture avec success!")
                     close()
                 }
             })

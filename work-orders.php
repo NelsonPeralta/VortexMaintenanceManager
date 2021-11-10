@@ -24,6 +24,7 @@
             exit();
         }else{ include_once("partials/navigation-bar.php");?>
             <button id="new-work-order-btn" onclick="newWorkOrder()">New Work Order</button>
+            <!-- <button id="view-closed-work-orders-btn" onclick="ShowClosedWorkOrders()">View Closed Work Orders</button> -->
 
             <section id="home-body">
                 <?php $req = $action->GetWorkOrders(); ?>

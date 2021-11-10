@@ -16,7 +16,7 @@
         }
 
         function GetWorkOrders(){
-            $req = $this->companydb->prepare("SELECT * FROM work_orders");
+            $req = $this->companydb->prepare("SELECT * FROM work_orders WHERE open=1");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
 
