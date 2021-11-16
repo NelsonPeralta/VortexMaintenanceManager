@@ -61,24 +61,24 @@
         function GetListOfWorkers($generated_id){
             $listOfWorkers = [];
             $req = $this->companydb->prepare("SELECT * FROM work_orders_x_workers 
-                WHERE (SELECT id FROM work_orders WHERE generated_id='$generated_id')");
+                WHERE work_order_id=(SELECT id FROM work_orders WHERE generated_id='$generated_id')");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
 
             while($row = $req->fetch()){
                 $memberid = $row["worker_id"];
+                    $wreq = $this->companydb->prepare("SELECT * FROM members WHERE id='$memberid'");
+                    $wreq->setFetchMode(PDO::FETCH_ASSOC);
+                    $wreq->execute();
+                    $member = $wreq->fetch();
+                    if($member != FALSE && $member!=NULL){
+                        $memberDAO = new MemberDAO($member["id"], 
+                            $member["name"], $member["surname"], $member["user_id"]);
+        
+                        array_push($listOfWorkers, $memberDAO);
 
-                $wreq = $this->companydb->prepare("SELECT * FROM members WHERE id='$memberid'");
-                $wreq->setFetchMode(PDO::FETCH_ASSOC);
-                $wreq->execute();
-                $member = $wreq->fetch();
-                if($member == FALSE){
-                    return;
                 }
-                $memberDAO = new MemberDAO($member["id"], 
-                    $member["name"], $member["surname"], $member["user_id"]);
 
-                array_push($listOfWorkers, $memberDAO);
             }
 
             return $listOfWorkers;

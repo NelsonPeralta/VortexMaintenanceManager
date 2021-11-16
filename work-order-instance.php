@@ -192,7 +192,7 @@
                     if(isset($_GET["wogid"])){
                         $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
                         $listofmembers = [];
-
+                        
                         if($listofworkers != NULL){
                             
                             
@@ -220,8 +220,8 @@
                                         echo "<option value=$memberid>$membersurname $membername</option>";
                                     }
                                 }
+                                echo "</select>";
                             }
-                            echo "</select>";
                         }
                     }
                 ?>

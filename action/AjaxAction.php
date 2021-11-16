@@ -257,10 +257,13 @@
 
             for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
                 $tempWorkerId = $listofworkers[$x];
-                $req = $this->companydb->prepare("INSERT INTO work_orders_x_workers(work_order_id, worker_id) 
-                    VALUES ((SELECT id FROM work_orders WHERE generated_id='$generated_id'), '$tempWorkerId');");
-                $req->setFetchMode(PDO::FETCH_ASSOC);
-                $req->execute();
+                if(intval($tempWorkerId) > 0){
+                    $req = $this->companydb->prepare("INSERT INTO work_orders_x_workers(work_order_id, worker_id) 
+                        VALUES ((SELECT id FROM work_orders WHERE generated_id='$generated_id'), '$tempWorkerId');");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+
+                }
             }
         }
 
