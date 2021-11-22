@@ -1,8 +1,8 @@
 <?php
-    require_once("action/EmployeesAction.php");
+    require_once("action/EquipmentsAction.php");
 
-	$action = new EmployeesAction();
-	$data = $action->execute();	
+	$action = new EquipmentsAction();
+	$data = $action->execute();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,8 +13,8 @@
     
     <link rel="icon" href="sprites/vortex_logo.png">
     <?php 
-        $employeeId = $_GET["mid"];
-        echo  "<title>$employeeId</title>";
+        $equipmentId = $_GET["eid"];
+        echo  "<title>$equipmentId</title>";
         $data = $action->execute();
     ?>
     
@@ -24,42 +24,33 @@
 <body>
     <div id="register-menu" class="align-horizontal">
         <?php
-            $userAdaptorDAO = $action->GetUserAdaptorWithMemberId($employeeId);
-            // var_dump($userAdaptorDAO);
+            $equipmentDAO = $action->GetEquipment($equipmentId);
 
-            $memberName = $userAdaptorDAO->GetMemberName();
-            $memberSurname = $userAdaptorDAO->GetMemberSurname();
+            $equipmentName = $equipmentDAO->GetName();
+            $equipmentTag = $equipmentDAO->GetTag();
+            $equipmentDescription = $equipmentDAO->GetDescription();
 
-            $username = $userAdaptorDAO->GetUsername();
-            $email = $userAdaptorDAO->GetEmail();
-
-            echo "<input type='text' placeholder='name' id='name-input' value='$memberName'>";
-            echo "<input type='text' placeholder='surname' id='surname-input' value='$memberSurname'>";
-
-            echo "<input type='text' placeholder='username' id='username-input' value='$username'>";
-            echo "<input type='password' placeholder='password' id='password-input'>";
-            
-            echo "<input type='text' placeholder='email' id='email-input' value='$email'>";
+            echo "<input type='text' placeholder='name' id='name-input' value='$equipmentName'>";
+            echo "<input type='text' placeholder='tag' id='tag-input' value='$equipmentTag'>";
+            echo "<input type='text' placeholder='description' id='description-input' value='$equipmentDescription'>";
         ?>
 
         <button id="register-register-btn" onclick="Save()">Save</button>
     </div>
 
     <script>
+        const originalTag = document.getElementById("tag-input").value
         const Save = () =>{
             const nameValue = document.getElementById("name-input").value
-            const surnameValue = document.getElementById("surname-input").value
-            const usernameValue = document.getElementById("username-input").value
-            const pwdValue = document.getElementById("password-input").value
-            const emailValue = document.getElementById("email-input").value
+            const tagValue = document.getElementById("tag-input").value
+            const descriptionValue = document.getElementById("description-input").value
 
             let formData = new FormData();
-            formData.append('service', "save-member-info")
+            formData.append('service', "save-equipment-info")
             formData.append('name', nameValue)
-            formData.append('surname', surnameValue)
-            formData.append('username', usernameValue)
-            formData.append('password', pwdValue)
-            formData.append('email', emailValue)
+            formData.append('tag', tagValue)
+            formData.append('original_tag', originalTag)
+            formData.append('description', descriptionValue)
 
             fetch("ajax.php", {
                 method: "POST",

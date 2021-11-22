@@ -46,6 +46,8 @@
     </div>
 
     <script>
+        const originalName = document.getElementById("name-input").value
+        const originalSurname = document.getElementById("surname-input").value
         const Save = () =>{
             const nameValue = document.getElementById("name-input").value
             const surnameValue = document.getElementById("surname-input").value
@@ -55,6 +57,8 @@
 
             let formData = new FormData();
             formData.append('service', "save-member-info")
+            formData.append('original_name', originalName)
+            formData.append('original_surname', originalSurname)
             formData.append('name', nameValue)
             formData.append('surname', surnameValue)
             formData.append('username', usernameValue)

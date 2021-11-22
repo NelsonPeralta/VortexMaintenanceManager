@@ -34,6 +34,8 @@
                     return $this->AddNewEquipment();
                 }else if($_POST["service"] == "delete-equipment"){
                     return $this->DeleteEquipment();
+                }else if($_POST["service"] == "save-equipment-info"){
+                    return $this->SaveEquipmentInfo();
                 }
             }
         }
@@ -321,6 +323,8 @@
 
             $result["error"] = "";
 
+            $originalname = $_POST["original_name"];
+            $originalsurname = $_POST["original_surname"];
             $name = $_POST["name"];
             $surname = $_POST["surname"];
             $username = $_POST["username"];
@@ -330,7 +334,7 @@
             
             $req = $this->companydb->prepare("UPDATE members 
                 SET name='$name', surname='$surname' 
-                WHERE name='$name' AND surname='$surname';");
+                WHERE name='$originalname' AND surname='$originalsurname';");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
 
@@ -451,6 +455,30 @@
                 id='$equipmentid'");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
+        }
+
+        function SaveEquipmentInfo(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $orignaltag = $_POST["original_tag"];
+            $tag = $_POST["tag"];
+            $description = $_POST["description"];
+            
+            try{
+                $req = $this->companydb->prepare("UPDATE Equipments 
+                    SET name='$name', tag='$tag', description='$description'
+                    WHERE tag='$orignaltag';");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                
+            }catch (PDOException $e){
+                $result["error"] = "Tag already in use";
+            }
+
+            return compact("result");
         }
     }
 ?>
