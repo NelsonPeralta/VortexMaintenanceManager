@@ -32,6 +32,8 @@
                     return $this->CloseWorkOrder();
                 }else if($_POST["service"] == "add-new-equipment"){
                     return $this->AddNewEquipment();
+                }else if($_POST["service"] == "delete-equipment"){
+                    return $this->DeleteEquipment();
                 }
             }
         }
@@ -436,6 +438,19 @@
             }
 
             return compact("result");
+        }
+
+        function DeleteEquipment(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $equipmentid = $_POST["id"];
+
+            $req = $this->companydb->prepare("DELETE FROM Equipments WHERE 
+                id='$equipmentid'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
         }
     }
 ?>
