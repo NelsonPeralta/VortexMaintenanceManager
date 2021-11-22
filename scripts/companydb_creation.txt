@@ -175,7 +175,8 @@ CREATE TABLE `work_time_entries` (
 --
 ALTER TABLE `equipments`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
+  ADD UNIQUE KEY `id` (`id`),
+  ADD UNIQUE KEY `tag` (`id`);
 
 --
 -- Indexes for table `members`

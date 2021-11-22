@@ -30,6 +30,8 @@
                     return $this->DeleteWorkOrder();
                 }else if($_POST["service"] == "close-work-order"){
                     return $this->CloseWorkOrder();
+                }else if($_POST["service"] == "add-new-equipment"){
+                    return $this->AddNewEquipment();
                 }
             }
         }
@@ -406,6 +408,32 @@
                     WHERE generated_id='$wogid';");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
+
+            return compact("result");
+        }
+
+        function AddNewEquipment(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $tag = $_POST["tag"];
+            $description = $_POST["description"];
+
+            try{
+                $req = $this->companydb->prepare("INSERT INTO Equipments (name, tag, description) VALUES('$name', '$tag', '$description')");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+    
+                $req = $this->companydb->prepare("SELECT * FROM Equipments WHERE tag='$tag'");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $result["new_equipment_info"] = $req->fetch();
+
+            }catch (PDOException $e){
+                $result["error"] = "Tag already in use";
+            }
 
             return compact("result");
         }
