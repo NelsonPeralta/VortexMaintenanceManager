@@ -9,6 +9,7 @@
     require_once("dao/PriorityDAO.php");
     require_once("dao/StatusDAO.php");
     require_once("dao/EquipmentDAO.php");
+    require_once("dao/PartDAO.php");
     require_once("dao/WorkOrderDAO.php");
     require_once("dao/UserAdaptorDAO.php");
     require_once("dao/WorkOrderAdaptorDAO.php");

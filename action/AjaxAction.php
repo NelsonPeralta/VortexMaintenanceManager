@@ -36,6 +36,10 @@
                     return $this->DeleteEquipment();
                 }else if($_POST["service"] == "save-equipment-info"){
                     return $this->SaveEquipmentInfo();
+                }else if($_POST["service"] == "save-part-info"){
+                    return $this->SavePartInfo();
+                }else if($_POST["service"] == "delete-part"){
+                    return $this->DeletePart();
                 }
             }
         }
@@ -448,13 +452,18 @@
             $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
 
             $result["error"] = "";
-
             $equipmentid = $_POST["id"];
 
-            $req = $this->companydb->prepare("DELETE FROM Equipments WHERE 
+            try{
+                $req = $this->companydb->prepare("DELETE FROM Equipments WHERE 
                 id='$equipmentid'");
-            $req->setFetchMode(PDO::FETCH_ASSOC);
-            $req->execute();
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+            }catch (PDOException $e){
+                $result["error"] = "$e";
+            }
+
+            return compact("result");
         }
 
         function SaveEquipmentInfo(){
@@ -480,5 +489,46 @@
 
             return compact("result");
         }
+
+        function SavePartInfo(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $generatedId = $_POST["generatedId"];
+            $description = $_POST["description"];
+            $stock = $_POST["stock"];
+            $price = $_POST["price"];
+            
+            try{
+                $req = $this->companydb->prepare("UPDATE Parts 
+                    SET name='$name', description='$description', stock='$stock', price='$price'
+                    WHERE generated_id='$generatedId';");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                
+            }catch (PDOException $e){
+                $result["error"] = "$e";
+            }
+
+            return compact("result");
+        }
+
+        function DeletePart(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $generatedId = $_POST["generatedId"];
+
+            $req = $this->companydb->prepare("DELETE FROM Parts WHERE 
+                generated_id='$generatedId'");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            return compact("result");
+        }
     }
+    // rollback example: p;https://www.php.net/manual/en/mysqli.begin-transaction.php
 ?>

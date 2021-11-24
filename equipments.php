@@ -112,8 +112,14 @@
                     }
                 }).then(data => {
                     console.log(data)
-                    alert("equipment deleted successfully")
-                    location.reload()
+                    data = JSON.parse(data)["result"]
+
+                    if(data["error"] != "")
+                            alert(data["error"])
+                    else{
+                        alert("Equipment deleted successfully")
+                        location.reload()
+                    }
                 })
         }
     </script>

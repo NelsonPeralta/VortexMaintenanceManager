@@ -11,6 +11,7 @@
                 <button id="navigation-bar-work-orders-btn" onclick="GoToWorkOrders()">Work Orders</button>
                 <button id="navigation-bar-employees-btn" onclick="GoToEmployees()">Employees</button>
                 <button id="navigation-bar-equipments-btn" onclick="GoToEquipments()">Equipments</button>
+                <button id="navigation-bar-equipments-btn" onclick="GoToInventory()">Inventory</button>
                 |
                 <button id="navigation-bar-logout-btn" onclick="Logout()">Logout</button>
         <?php
@@ -38,6 +39,10 @@
 
     const GoToEquipments = () =>{
         window.location.replace("equipments.php")
+    }
+
+    const GoToInventory = () =>{
+        window.location.replace("inventory.php")
     }
 
     const Logout = () =>{
