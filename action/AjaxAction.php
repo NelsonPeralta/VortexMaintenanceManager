@@ -40,6 +40,8 @@
                     return $this->SavePartInfo();
                 }else if($_POST["service"] == "delete-part"){
                     return $this->DeletePart();
+                }else if($_POST["service"] == "add-new-part"){
+                    return $this->AddNewPart();
                 }
             }
         }
@@ -526,6 +528,35 @@
                 generated_id='$generatedId'");
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
+
+            return compact("result");
+        }
+
+        function AddNewPart(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $result["error"] = "";
+
+            $name = $_POST["name"];
+            $description = $_POST["description"];
+            $stock = $_POST["stock"];
+            $price = $_POST["price"];
+
+            try{
+                if(strlen($name) <= 0){
+                    throw new Exception("Name cannot be empty.");
+                }else if(!is_numeric($stock) || !is_numeric($price)){
+                    throw new Exception("Stock and Price must be numeric.");
+                }
+                $req = $this->companydb->prepare("INSERT INTO Parts (name, description, stock, price) VALUES('$name', '$description', '$stock', '$price')");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+            }catch (Exception $e){
+                $result["error"] = $e->getMessage();
+
+            }catch (PDOException $e){
+                $result["error"] = $e;
+            }
 
             return compact("result");
         }

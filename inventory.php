@@ -23,8 +23,6 @@
             header("Location: index.php");
             exit();
         }else{ include_once("partials/navigation-bar.php");?>
-            <button id="new-part-btn" onclick="newPart()">New Part</button>
-
             <section id="home-body">
                 <?php $req = $action->getInventory(); ?>
 
@@ -44,6 +42,17 @@
                     ?>
                 </table>
             </section>
+        <section>
+            <fieldset>
+                <legend>New Part</legend>
+                <input type="text" placeholder="Name" id="new-part-name-input"><br>
+                <textarea placeholder="Description" id="new-part-description-input" rows='10' cols='100'></textarea><br>
+                <input type="text" placeholder="Stock" id="new-part-stock-input"><br>
+                <input type="text" placeholder="Price" id="new-part-price-input"><br>
+                <button id="new-part-btn" onclick="newPart()">New Part</button>
+
+            </fieldset>
+        </section>
     <?php
         }
     ?>
@@ -53,8 +62,37 @@
             window.open("part_instance.php?pid=" + partId)
         }
 
-        const newWorkOrder = () =>{
-            window.open("work-order-instance.php")
+        const newPart = () =>{
+            newPartNameValue = document.getElementById("new-part-name-input").value
+            newPartDescriptionValue = document.getElementById("new-part-description-input").value
+            newPartStockValue = document.getElementById("new-part-stock-input").value
+            newPartPriceValue = document.getElementById("new-part-price-input").value
+
+            let formData = new FormData();
+            formData.append('service', "add-new-part")
+            formData.append('name', newPartNameValue)
+            formData.append('description', newPartDescriptionValue)
+            formData.append('stock', newPartStockValue)
+            formData.append('price', newPartPriceValue)
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                data = JSON.parse(data)["result"]
+
+                if(data["error"] != "")
+                        alert("ERROR: " + data["error"])
+                else{
+                    alert("Enregistrement d'une nouvelle piece avec success!")
+                }
+            })
         }
     </script>
 </body>
