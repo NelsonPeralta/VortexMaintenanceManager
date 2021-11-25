@@ -590,16 +590,16 @@
             $req->setFetchMode(PDO::FETCH_ASSOC);
             $req->execute();
 
-            $listOfParts = [];
+            $listOfPartDAOs = [];
             while($row = $req->fetch()){
-                // $partDAO = new PartDAO
-                array_push($listOfParts, $row);
+                // Does not work, sends empty
+                // $partDAO = new PartDAO($row["id"], $row["generated_id"], $row["name"], $row["description"], $row["stock"], $row["price"]);
+                // array_push($listOfPartDAOs, $partDAO);
 
-                // $workerId = $row["id"];
-                // $DOMLine .= "<option>$workerId</option>";
+                array_push($listOfPartDAOs, $row);
             }
 
-            $result["workers"] = $listOfParts;
+            $result["parts"] = $listOfPartDAOs;
 
             return compact("result");
         }

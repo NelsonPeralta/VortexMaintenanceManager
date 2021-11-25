@@ -187,7 +187,7 @@
             </section>
             <fieldset id="work-order-workers-fieldset" class="align-horizontal">
                 <legend>Workers</legend>
-                <button id="work-order-add-worker-btn" onclick="addworkerrow()">Add a Worker</button><br>
+                <button id="work-order-add-worker-btn" onclick="addWorkerRow()">Add a Worker</button><br>
                 <?php 
                     if(isset($_GET["wogid"])){
                         $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
@@ -227,9 +227,9 @@
                 ?>
             </fieldset>
 
-            <fieldset id="work-order-workers-fieldset" class="align-horizontal">
+            <fieldset id="work-order-parts-fieldset" class="align-horizontal">
                 <legend>Parts</legend>
-                <button id="work-order-add-worker-btn" onclick="addPartRow()">Add a Part</button><br>
+                <button id="work-order-add-part-btn" onclick="addPartRow()">Add a Part</button><br>
                 <?php 
                     if(isset($_GET["wogid"])){
                         // $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
@@ -285,6 +285,7 @@
     ?>
     <script>
         const workersFieldset = document.getElementById("work-order-workers-fieldset")
+        const partsFieldset = document.getElementById("work-order-parts-fieldset")
 
         const addWorkerRow = () =>{
 
@@ -366,30 +367,30 @@
 
                 // DOMLine = data["DOMLine"]
 
-                // selectDOM = document.createElement("select")
-                // selectDOM.classList.add("work-order-worker-select")
-                // workersFieldset.appendChild(selectDOM)
+                selectDOM = document.createElement("select")
+                selectDOM.classList.add("work-order-worker-select")
+                partsFieldset.appendChild(selectDOM)
 
-                // emptyOptionDOM = document.createElement("option")
-                // emptyOptionDOM.innerHTML = "-- None --"
-                // emptyOptionDOM.value = 0
-                // selectDOM.appendChild(emptyOptionDOM)
+                emptyOptionDOM = document.createElement("option")
+                emptyOptionDOM.innerHTML = "-- None --"
+                emptyOptionDOM.value = 0
+                selectDOM.appendChild(emptyOptionDOM)
 
-                // for (let i = 0; i < data["workers"].length; i++){
-                //     console.log(data["workers"][i])
+                for (let i = 0; i < data["parts"].length; i++){
+                    console.log(data["parts"][i])
 
-                //     worker = data["workers"][i]
-                //     console.log(worker)
+                    worker = data["parts"][i]
+                    console.log(worker)
 
 
-                //     optionDOM = document.createElement("option")
-                //     optionDOM.innerHTML = worker["name"] +  " " + worker["surname"]
-                //     optionDOM.value = worker["id"]
-                //     optionDOM.classList.add("work-order-worker-option")
+                    optionDOM = document.createElement("option")
+                    optionDOM.innerHTML = worker["generated_id"] +  " - " + worker["name"]
+                    optionDOM.value = worker["id"]
+                    optionDOM.classList.add("work-order-worker-option")
 
-                //     selectDOM.appendChild(optionDOM)
-                //     selectDOM.appendChild(document.createElement("br"))
-                // }
+                    selectDOM.appendChild(optionDOM)
+                    selectDOM.appendChild(document.createElement("br"))
+                }
             })
         }
 
