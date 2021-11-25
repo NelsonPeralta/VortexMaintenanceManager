@@ -42,6 +42,8 @@
                     return $this->DeletePart();
                 }else if($_POST["service"] == "add-new-part"){
                     return $this->AddNewPart();
+                }else if($_POST["service"] == "add-part-row"){
+                    return $this->GetListOfParts();
                 }
             }
         }
@@ -545,18 +547,59 @@
             try{
                 if(strlen($name) <= 0){
                     throw new Exception("Name cannot be empty.");
-                }else if(!is_numeric($stock) || !is_numeric($price)){
-                    throw new Exception("Stock and Price must be numeric.");
+                }else if(strlen($stock) > 0 && !is_numeric($stock)){
+                    throw new Exception("Stock must be numeric.");
+                }else if(strlen($price) > 0 && !is_numeric($price)){
+                    throw new Exception("Price must be numeric.");
                 }
+
                 $req = $this->companydb->prepare("INSERT INTO Parts (name, description, stock, price) VALUES('$name', '$description', '$stock', '$price')");
                 $req->setFetchMode(PDO::FETCH_ASSOC);
                 $req->execute();
+
+                $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+                $req = $req->fetch();
+                $npid = $req["LAST_INSERT_ID()"];
+
+                $x = 8 - strlen($npid);
+                $suffix = str_pad($npid, 7, "0", STR_PAD_LEFT);
+                $generatedId = "PA-" . $suffix;
+                
+                $req = $this->companydb->prepare("UPDATE Parts SET generated_id='$generatedId' WHERE id='$npid';");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
+
+                $result["generated id"] = $generatedId;
+
             }catch (Exception $e){
                 $result["error"] = $e->getMessage();
 
             }catch (PDOException $e){
                 $result["error"] = $e;
             }
+
+            return compact("result");
+        }
+
+        function GetListOfParts(){
+            $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
+
+            $req = $this->companydb->prepare("SELECT * FROM Parts");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            $listOfParts = [];
+            while($row = $req->fetch()){
+                // $partDAO = new PartDAO
+                array_push($listOfParts, $row);
+
+                // $workerId = $row["id"];
+                // $DOMLine .= "<option>$workerId</option>";
+            }
+
+            $result["workers"] = $listOfParts;
 
             return compact("result");
         }

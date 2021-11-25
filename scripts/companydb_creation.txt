@@ -47,7 +47,7 @@ INSERT INTO `members` (`id`, `name`, `surname`, `user_id`) VALUES
 
 CREATE TABLE `parts` (
   `id` int(11) NOT NULL,
-  `generated_id` char(9) NOT NULL,
+  `generated_id` char(10) NOT NULL,
   `name` varchar(128) NOT NULL,
   `description` varchar(1000) DEFAULT NULL,
   `stock` int(11) DEFAULT 0,
@@ -59,9 +59,9 @@ CREATE TABLE `parts` (
 --
 
 INSERT INTO `parts` (`id`, `generated_id`, `name`, `description`, `stock`, `price`) VALUES
-(1, 'PA-000001', 'Screw', 'A steel screw', 100, 0.05),
-(2, 'PA-000002', 'Chain', 'A long chain', 3, 10.05),
-(3, 'PA-000003', 'Valve', 'A sturdy valve', 25, 85);
+(1, 'PA-0000001', 'Screw', 'A steel screw', 100, 0.05),
+(2, 'PA-0000002', 'Chain', 'A long chain', 3, 10.05),
+(3, 'PA-0000003', 'Valve', 'A sturdy valve', 25, 85);
 
 -- --------------------------------------------------------
 

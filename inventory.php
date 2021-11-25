@@ -30,6 +30,8 @@
                     <tr>
                         <th>Part Id</th>
                         <th>Name</th>
+                        <th>Stock</th>
+                        <th>Price</th>
                     </tr>
                     <?php
                         while($row = $req->fetch()){
@@ -37,7 +39,9 @@
                             $partId = $row["id"];
                             $generatedId = $row["generated_id"];
                             $name = $row["name"];
-                            echo "<tr id='$generatedId' class='work-order'> <th onclick='openPart($partId)'>$generatedId</th> <th>$name</th></tr>";
+                            $stock = $row["stock"];
+                            $price = $row["price"];
+                            echo "<tr id='$generatedId' class='work-order'> <th onclick='openPart($partId)'>$generatedId</th>  <th>$name</th>  <th>$stock</th>   <th>$price</th></tr>";
                         }
                     ?>
                 </table>
@@ -49,7 +53,7 @@
                 <textarea placeholder="Description" id="new-part-description-input" rows='10' cols='100'></textarea><br>
                 <input type="text" placeholder="Stock" id="new-part-stock-input"><br>
                 <input type="text" placeholder="Price" id="new-part-price-input"><br>
-                <button id="new-part-btn" onclick="newPart()">New Part</button>
+                <button id="new-part-btn" onclick="saveNewPart()">Save New Part</button>
 
             </fieldset>
         </section>
@@ -62,7 +66,7 @@
             window.open("part_instance.php?pid=" + partId)
         }
 
-        const newPart = () =>{
+        const saveNewPart = () =>{
             newPartNameValue = document.getElementById("new-part-name-input").value
             newPartDescriptionValue = document.getElementById("new-part-description-input").value
             newPartStockValue = document.getElementById("new-part-stock-input").value
@@ -86,6 +90,7 @@
                 }
             }).then(data => {
                 data = JSON.parse(data)["result"]
+                console.log(data)
 
                 if(data["error"] != "")
                         alert("ERROR: " + data["error"])

@@ -227,6 +227,48 @@
                 ?>
             </fieldset>
 
+            <fieldset id="work-order-workers-fieldset" class="align-horizontal">
+                <legend>Parts</legend>
+                <button id="work-order-add-worker-btn" onclick="addPartRow()">Add a Part</button><br>
+                <?php 
+                    if(isset($_GET["wogid"])){
+                        // $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
+                        // $listofmembers = [];
+                        
+                        // if($listofworkers != NULL){
+                            
+                            
+                        //     $req = $action->GetMembers();
+                        //     while($row = $req->fetch()){
+                                
+                        //         array_push($listofmembers, $row);
+                        //     }
+                            
+                        
+                            
+                        //     for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
+                        //         echo "<select class='work-order-worker-select'>";
+                        //         $workername = $listofworkers[$x]->GetName();
+                        //         $workersurname = $listofworkers[$x]->GetSurname();
+                        //         $workerid = $listofworkers[$x]->GetId();
+                        //         echo "<option value=$workerid>$workersurname $workername</option>";
+                        //         echo "<option value=0>-- None --</option>";
+                                
+                        //         for ($y = 0; $y <= count($listofmembers) - 1; $y++){
+                        //             if($listofmembers[$y]["id"] != $workerid){
+                        //                 $membername = $listofmembers[$y]["name"];
+                        //                 $membersurname = $listofmembers[$y]["surname"];
+                        //                 $memberid = $listofmembers[$y]["id"];
+                        //                 echo "<option value=$memberid>$membersurname $membername</option>";
+                        //             }
+                        //         }
+                        //         echo "</select>";
+                        //     }
+                        // }
+                    }
+                ?>
+            </fieldset>
+
             <div>
                 <button id="work-order-save-btn" onclick="savewochanges()">Save</button>
                 <?php
@@ -242,30 +284,9 @@
         }
     ?>
     <script>
-        window.addEventListener('load', e =>{
-            document.addEventListener("click", clickListener)
-        })
+        const workersFieldset = document.getElementById("work-order-workers-fieldset")
 
-        const clickListener = (event) =>{
-            const x = event.clientX, y = event.clientY
-            let clickedDOM = document.elementFromPoint(x, y)
-
-            if(clickedDOM.tagName == "TH"){
-                clickedDOM = clickedDOM.parentElement
-            }
-            if(clickedDOM.tagName == "TR" && clickedDOM.className == "work-order"){
-                window.open("instances/work-order-instance.php")
-            }
-            console.log(clickedDOM)
-            //if(elementDessousSouris.parentElement.className == "card")
-            //    elementDessousSouris = elementDessousSouris.parentElement
-            
-        }
-
-        const addworkerrow = () =>{
-            console.log("Added Worker Row")
-
-            workersFieldset = document.getElementById("work-order-workers-fieldset")
+        const addWorkerRow = () =>{
 
             let formData = new FormData();
             formData.append('service', "add-worker-row")
@@ -320,6 +341,55 @@
                 // let row = new DOMParser().parseFromString(DOMLine, "text/html")
                 // selectDOM.appendChild(row.documentElement)
                 // row.body.firstChild
+            })
+        }
+
+        const addPartRow = () =>{
+
+            let formData = new FormData();
+            formData.append('service', "add-part-row")
+
+            fetch("ajax.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    console.log("REQUEST FAILED, error: " + response.statusText);
+                }
+            }).then(data => {
+                console.log("RAW DATA:" + data)
+                data = JSON.parse(data)["result"]
+                console.log(data)
+
+
+                // DOMLine = data["DOMLine"]
+
+                // selectDOM = document.createElement("select")
+                // selectDOM.classList.add("work-order-worker-select")
+                // workersFieldset.appendChild(selectDOM)
+
+                // emptyOptionDOM = document.createElement("option")
+                // emptyOptionDOM.innerHTML = "-- None --"
+                // emptyOptionDOM.value = 0
+                // selectDOM.appendChild(emptyOptionDOM)
+
+                // for (let i = 0; i < data["workers"].length; i++){
+                //     console.log(data["workers"][i])
+
+                //     worker = data["workers"][i]
+                //     console.log(worker)
+
+
+                //     optionDOM = document.createElement("option")
+                //     optionDOM.innerHTML = worker["name"] +  " " + worker["surname"]
+                //     optionDOM.value = worker["id"]
+                //     optionDOM.classList.add("work-order-worker-option")
+
+                //     selectDOM.appendChild(optionDOM)
+                //     selectDOM.appendChild(document.createElement("br"))
+                // }
             })
         }
 
