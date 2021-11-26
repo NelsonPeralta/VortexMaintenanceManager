@@ -286,6 +286,7 @@
     <script>
         const workersFieldset = document.getElementById("work-order-workers-fieldset")
         const partsFieldset = document.getElementById("work-order-parts-fieldset")
+        let partCounter = 0
 
         const addWorkerRow = () =>{
 
@@ -367,9 +368,12 @@
 
                 // DOMLine = data["DOMLine"]
 
+                divDOM = document.createElement("div")
+
                 selectDOM = document.createElement("select")
-                selectDOM.classList.add("work-order-worker-select")
-                partsFieldset.appendChild(selectDOM)
+                selectDOM.classList.add("part-select")
+                selectDOM.id = "part-select-" + partCounter
+                divDOM.appendChild(selectDOM)
 
                 emptyOptionDOM = document.createElement("option")
                 emptyOptionDOM.innerHTML = "-- None --"
@@ -377,20 +381,24 @@
                 selectDOM.appendChild(emptyOptionDOM)
 
                 for (let i = 0; i < data["parts"].length; i++){
-                    console.log(data["parts"][i])
-
                     worker = data["parts"][i]
-                    console.log(worker)
-
 
                     optionDOM = document.createElement("option")
-                    optionDOM.innerHTML = worker["generated_id"] +  " - " + worker["name"]
+                    optionDOM.innerHTML = worker["generated_id"] +  " - " + worker["name"] + " (" +worker["stock"] + " in stock)"
                     optionDOM.value = worker["id"]
                     optionDOM.classList.add("work-order-worker-option")
 
                     selectDOM.appendChild(optionDOM)
                     selectDOM.appendChild(document.createElement("br"))
                 }
+
+                inputDOM = document.createElement("input")
+                inputDOM.id = "part-amount-input-" + partCounter
+                inputDOM.classList.add("part-amount-input")
+                divDOM.appendChild(inputDOM)
+                partsFieldset.appendChild(divDOM)
+
+                partCounter ++
             })
         }
 
@@ -422,18 +430,20 @@
             formData.append("equipment", newEqu)
 
             workersDOM = document.getElementsByClassName("work-order-worker-select")
-            listOfWorkers = []
-            formData.append('listofworkers[]', listOfWorkers)
-
-            for (i = 0; i < workersDOM.length; i++){
-                if(workersDOM[i].value != 0)
-                    listOfWorkers.push(workersDOM[i].value)
+            for (i = 0; i < workersDOM.length; i++) {
+                formData.append('listOfWorkers[]', workersDOM[i].value);
             }
-            console.log(listOfWorkers)
 
-            for (var i = 0; i < listOfWorkers.length; i++) {
-                formData.append('listofworkers[]', listOfWorkers[i]);
+
+
+            partDOMs = document.getElementsByClassName("part-select")
+            partAmountDOMs = document.getElementsByClassName("part-amount-input")
+            for (i = 0; i < partDOMs.length; i++){
+                formData.append('listOfParts[]', partDOMs[i].value);
+                formData.append('listOfPartAmounts[]', partAmountDOMs[i].value);
             }
+
+
 
             fetch("ajax.php", {
                 method: "POST",
@@ -452,10 +462,10 @@
                         alert(data["error"])
                 else{
                     console.log(data)
-                    wogid = data["generated_id"]
-                    alert("Enregistrement avec success!" + wogid)
-                    window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
-                    close()
+                    // wogid = data["generated_id"]
+                    // alert("Enregistrement avec success!" + wogid)
+                    // window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
+                    // close()
                 }
             })
         }

@@ -17,7 +17,7 @@
                 }else if($_POST["service"] == "logout"){
                     return $this->logout();
                 }else if($_POST["service"] == "save-or-create-work-order"){
-                    return $this->saveorcreateworkorder();
+                    return $this->saveOrCreateWorkOrder();
                 }else if($_POST["service"] == "add-worker-row"){
                     return $this->GetListOfMembers();
                 }else if($_POST["service"] == "add-new-employee"){
@@ -172,7 +172,12 @@
             return compact("result");
         }
 
-        function saveorcreateworkorder(){
+        // https://stackoverflow.com/questions/3145607/php-check-if-an-array-has-duplicates
+        function no_dupes(array $input_array) {
+            return count($input_array) === count(array_flip($input_array));
+        }
+
+        function saveOrCreateWorkOrder(){
             $this->makecompanyconnection($_SESSION["user"]->GetCompanyName());
 
             $result["error"] = "";
@@ -185,58 +190,127 @@
             $newPri = $_POST["priority"];
             $newSta = $_POST["status"];
             $newEqu = $_POST["equipment"];
-            $listofworkers = $_POST["listofworkers"];
+            $listOfWorkers = [];
+            $listOfParts = [];
+            $listOfPartAmounts = [];
 
-            
-            if($newTitle != ""){
-                
-                
-                if($_POST["wogid"] != "New Work Order"){
-                    $wogid = $_POST["wogid"];
-                    $result["generated_id"] = $wogid;
+            $result["initialListOfWorkers"] = [];
+            $result["initialListOfParts"] = [];
+            $result["initialListOfPartAmounts"] = [];
 
-                    // $req = $this->companydb->prepare("SELECT id FROM work_orders WHERE generated_id='$generated_id';");
-                    // $req->setFetchMode(PDO::FETCH_ASSOC);
-                    // $req->execute();        
-                    // $woid = $req->fetch();
-                    
-                    
-                    $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
-                        description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
-                        status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
-                    $req->setFetchMode(PDO::FETCH_ASSOC);
-                    $req->execute();
+            if(isset($_POST["listOfWorkers"])){
+                $result["initialListOfWorkers"] = $_POST["listOfWorkers"];
+                $listOfWorkers = array_map("intval", $_POST["listOfWorkers"]);
 
-                    $this->UpdateWorkers($wogid, $listofworkers);
-                }else{
-                    $result["info"] = "Creating Work Order";
-                    
-                    $req = $this->companydb->prepare("INSERT INTO `work_orders` (`id`, `generated_id`, `supervisor_member_id`, `priority_id`, `status_id`, `equipment_id`, `title`, `description`, `date_created`, `date_finished`, `date_start`, `open`) 
-                    VALUES (NULL, NULL, '$newSup', '$newPri', '$newSta', '$newEqu', '$newTitle', '$newDes',curdate(), NULL, NULL, 1);");
-                    $req->setFetchMode(PDO::FETCH_ASSOC);
-                    $req->execute();
-                    
-                    $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
-                    $req->setFetchMode(PDO::FETCH_ASSOC);
-                    $req->execute();
-                    $req = $req->fetch();
-                    $woid = $req["LAST_INSERT_ID()"];
-                    
-                    $this_year = date("Y");
-                    $new_id = str_pad($woid, 7, "0", STR_PAD_LEFT);
-                    $generated_id = $this_year . "-" . $new_id;
-                    
-                    $req = $this->companydb->prepare("UPDATE work_orders SET generated_id='$generated_id' WHERE id='$woid';");
-                    $req->setFetchMode(PDO::FETCH_ASSOC);
-                    $req->execute();
-
-                    $result["generated_id"] = $generated_id;
-
-                    $this->UpdateWorkers($generated_id, $listofworkers);
+                // On verifie si il y a des select de valeur 0 ("None")
+                // Si oui, on les enleve de la liste
+                for( $i =0; $i < count($listOfWorkers); $i++){
+                    if(intval($listOfWorkers[$i]) <= 0){
+                        array_splice($listOfWorkers, $i, 1);
+                    }
                 }
-            }else{
-                $result["error"] = "Le titre ne doit pas etre vide";
+
+                // On verifie si il y a des select de valeur identiques
+                // Si oui, on retourne une erreur, on ne veut pas le meme employee listee 2 fois
+                if(!$this->no_dupes($listOfWorkers)){
+                    $result["error"] = " Cannot have duplicate employees";
+                    return compact("result");
+                }
+                
+                $result["correctedListOfWorkers"] = $listOfWorkers;
             }
+
+            if(isset($_POST["listOfParts"]) && isset($_POST["listOfPartAmounts"])){
+                $result["initialListOfParts"] = $_POST["listOfParts"];
+                $result["initialListOfPartAmounts"] = $_POST["listOfPartAmounts"];
+                $listOfParts = $_POST["listOfParts"];
+                $listOfPartAmounts = $_POST["listOfPartAmounts"];
+                
+                // On verifie si il y a des select de valeur 0 ("None")
+                // Si oui, on les enleve de la liste ainsi que leur montant
+                for( $i =0; $i < count($listOfParts); $i++){
+                    if(intval($listOfParts[$i]) <= 0){
+                        array_splice($listOfParts, $i, 1);
+                        array_splice($listOfPartAmounts, $i, 1);
+                    }
+                }
+                $result["correctedListOfParts"] = $listOfParts;
+                $result["correctedListOfPartAmounts"] = $listOfPartAmounts;
+
+                // On verifie si il y a des select de valeur identiques
+                // Si oui, on retourne une erreur, on ne veut pas la mem piece listee 2 fois
+                if(!$this->no_dupes($listOfParts)){
+                    $result["error"] = " Cannot have duplicate parts";
+                    return compact("result");
+                }
+
+                // On verifie si les montants de pieces sont numeric
+                // Si non, on retourne une erreur
+                for ( $i =0; $i < count($listOfPartAmounts); $i++){
+                    if(!is_numeric($listOfPartAmounts[$i]) && intval($listOfParts[$i]) > 0){
+                        $result["error"] = "Part amounts cannot be empty and must be numeric.";
+                        return compact("result");
+                    }else if(intval($listOfPartAmounts[$i]) <= 0 && intval($listOfParts[$i]) > 0){
+                        $result["error"] = "Part amounts must be greater than 0.";
+                        return compact("result");
+                    }
+                }
+                $result["correctedListOfParts"] = $listOfParts;
+                $result["correctedListOfPartAmounts"] = $listOfPartAmounts;
+            }
+
+            if(strval($newTitle) == ""){
+                $result["error"] = "Title cannot be empty";
+                return compact("result");
+            }
+            
+                
+            
+            // if($_POST["wogid"] != "New Work Order"){
+            //     $result["info"] = ["Saving or updating work order", "Updating work order"];
+            //     $wogid = $_POST["wogid"];
+            //     $result["generated_id"] = $wogid;
+
+            //     // $req = $this->companydb->prepare("SELECT id FROM work_orders WHERE generated_id='$generated_id';");
+            //     // $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     // $req->execute();        
+            //     // $woid = $req->fetch();
+                
+                
+            //     $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
+            //         description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
+            //         status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
+            //     $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     $req->execute();
+
+            //     $this->UpdateWorkers($wogid, $listofworkers);
+            // }else{
+            //     $result["info"] = "Creating Work Order";
+                
+            //     $req = $this->companydb->prepare("INSERT INTO `work_orders` (`id`, `generated_id`, `supervisor_member_id`, `priority_id`, `status_id`, `equipment_id`, `title`, `description`, `date_created`, `date_finished`, `date_start`, `open`) 
+            //     VALUES (NULL, NULL, '$newSup', '$newPri', '$newSta', '$newEqu', '$newTitle', '$newDes',curdate(), NULL, NULL, 1);");
+            //     $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     $req->execute();
+                
+            //     $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
+            //     $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     $req->execute();
+            //     $req = $req->fetch();
+            //     $woid = $req["LAST_INSERT_ID()"];
+                
+            //     $this_year = date("Y");
+            //     $new_id = str_pad($woid, 7, "0", STR_PAD_LEFT);
+            //     $generated_id = $this_year . "-" . $new_id;
+                
+            //     $req = $this->companydb->prepare("UPDATE work_orders SET generated_id='$generated_id' WHERE id='$woid';");
+            //     $req->setFetchMode(PDO::FETCH_ASSOC);
+            //     $req->execute();
+
+            //     $result["generated_id"] = $generated_id;
+
+            //     $this->UpdateWorkers($generated_id, $listofworkers);
+            // }
+
             return compact("result");
         }
 
