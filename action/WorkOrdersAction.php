@@ -58,6 +58,24 @@
             return $req;
         }
 
+        function getAllParts(){
+            $listOfParts = [];
+            $req = $this->companydb->prepare("SELECT * FROM parts");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            while($row = $req->fetch()){
+                $partDAO = new PartDAO($row["id"], $row["generated_id"], 
+                    $row["name"], $row["description"], $row["stock"], $row["price"]);
+                //     $memberDAO = new MemberDAO($member["id"], 
+                //         $member["name"], $member["surname"], $member["user_id"]);
+    
+                array_push($listOfParts, $partDAO);
+            }
+
+            return $listOfParts;
+        }
+
         function GetListOfWorkers($generated_id){
             $listOfWorkers = [];
             $req = $this->companydb->prepare("SELECT * FROM work_orders_x_workers 
@@ -82,6 +100,33 @@
             }
 
             return $listOfWorkers;
+        }
+
+        function getListOfPartsAndAmounts($gid){
+            $listOfParts = [];
+            $listOfPartAmounts = [];
+
+            $req = $this->companydb->prepare("SELECT * FROM part_withdrawal_entries 
+                WHERE work_order_id=(SELECT id FROM work_orders WHERE generated_id='$gid')");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            while($row = $req->fetch()){
+                $partId = $row["part_id"];
+                $wreq = $this->companydb->prepare("SELECT * FROM Parts WHERE id='$partId'");
+                $wreq->setFetchMode(PDO::FETCH_ASSOC);
+                $wreq->execute();
+                $part = $wreq->fetch();
+                    // if($member != FALSE && $member!=NULL){
+                    //     $memberDAO = new MemberDAO($member["id"], 
+                    //         $member["name"], $member["surname"], $member["user_id"]);
+        
+                array_push($listOfParts, $part);
+                array_push($listOfPartAmounts, $row);
+            }
+
+            $lists = [$listOfParts, $listOfPartAmounts];
+            return $lists;
         }
 
         function GetWorkOrderWithGeneratedId($gid){

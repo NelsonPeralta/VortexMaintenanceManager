@@ -265,51 +265,52 @@
             }
             
                 
-            
-            // if($_POST["wogid"] != "New Work Order"){
-            //     $result["info"] = ["Saving or updating work order", "Updating work order"];
-            //     $wogid = $_POST["wogid"];
-            //     $result["generated_id"] = $wogid;
 
-            //     // $req = $this->companydb->prepare("SELECT id FROM work_orders WHERE generated_id='$generated_id';");
-            //     // $req->setFetchMode(PDO::FETCH_ASSOC);
-            //     // $req->execute();        
-            //     // $woid = $req->fetch();
-                
-                
-            //     $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
-            //         description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
-            //         status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
-            //     $req->setFetchMode(PDO::FETCH_ASSOC);
-            //     $req->execute();
+            try{
+                if($_POST["wogid"] != "New Work Order"){
+                    $result["info"] = ["Saving or updating work order", "Updating work order"];
+                    $wogid = $_POST["wogid"];
+                    $result["generated_id"] = $wogid;
 
-            //     $this->UpdateWorkers($wogid, $listofworkers);
-            // }else{
-            //     $result["info"] = "Creating Work Order";
-                
-            //     $req = $this->companydb->prepare("INSERT INTO `work_orders` (`id`, `generated_id`, `supervisor_member_id`, `priority_id`, `status_id`, `equipment_id`, `title`, `description`, `date_created`, `date_finished`, `date_start`, `open`) 
-            //     VALUES (NULL, NULL, '$newSup', '$newPri', '$newSta', '$newEqu', '$newTitle', '$newDes',curdate(), NULL, NULL, 1);");
-            //     $req->setFetchMode(PDO::FETCH_ASSOC);
-            //     $req->execute();
-                
-            //     $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
-            //     $req->setFetchMode(PDO::FETCH_ASSOC);
-            //     $req->execute();
-            //     $req = $req->fetch();
-            //     $woid = $req["LAST_INSERT_ID()"];
-                
-            //     $this_year = date("Y");
-            //     $new_id = str_pad($woid, 7, "0", STR_PAD_LEFT);
-            //     $generated_id = $this_year . "-" . $new_id;
-                
-            //     $req = $this->companydb->prepare("UPDATE work_orders SET generated_id='$generated_id' WHERE id='$woid';");
-            //     $req->setFetchMode(PDO::FETCH_ASSOC);
-            //     $req->execute();
+                    $req = $this->companydb->prepare("UPDATE work_orders SET title='$newTitle', 
+                        description='$newDes', supervisor_member_id='$newSup', priority_id='$newPri', 
+                        status_id='$newSta', equipment_id='$newEqu' WHERE generated_id='$wogid';");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+    
+                    $this->UpdateWorkers($wogid, $listOfWorkers);
+                    $this->UpdateParts($wogid, $listOfParts, $listOfPartAmounts);
+                }
+                else{
+                    $result["info"] = "Creating Work Order";
+                    
+                    $req = $this->companydb->prepare("INSERT INTO `work_orders` (`id`, `generated_id`, `supervisor_member_id`, `priority_id`, `status_id`, `equipment_id`, `title`, `description`, `date_created`, `date_finished`, `date_start`, `open`) 
+                    VALUES (NULL, NULL, '$newSup', '$newPri', '$newSta', '$newEqu', '$newTitle', '$newDes',curdate(), NULL, NULL, 1);");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                    
+                    $req = $this->companydb->prepare("SELECT LAST_INSERT_ID();");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
+                    $req = $req->fetch();
+                    $woid = $req["LAST_INSERT_ID()"];
+                    
+                    $this_year = date("Y");
+                    $new_id = str_pad($woid, 7, "0", STR_PAD_LEFT);
+                    $generated_id = $this_year . "-" . $new_id;
+                    
+                    $req = $this->companydb->prepare("UPDATE work_orders SET generated_id='$generated_id' WHERE id='$woid';");
+                    $req->setFetchMode(PDO::FETCH_ASSOC);
+                    $req->execute();
 
-            //     $result["generated_id"] = $generated_id;
+                    $result["generated_id"] = $generated_id;
 
-            //     $this->UpdateWorkers($generated_id, $listofworkers);
-            // }
+                    $this->UpdateWorkers($generated_id, $listOfWorkers);
+                    $this->UpdateParts($generated_id, $listOfParts, $listOfPartAmounts);
+                }
+            }catch(Exception $e){
+                $result["error"] = $e->getMessage();
+            }
 
             return compact("result");
         }
@@ -352,6 +353,24 @@
                     $req->execute();
 
                 }
+            }
+        }
+
+        function UpdateParts($generated_id, $listOfParts, $listOfPartAmounts){
+            $req = $this->companydb->prepare("DELETE FROM part_withdrawal_entries WHERE 
+                        work_order_id=(SELECT id FROM work_orders WHERE generated_id='$generated_id');");
+            $req->setFetchMode(PDO::FETCH_ASSOC);
+            $req->execute();
+
+            for ($x = 0; $x < count($listOfParts); $x++) {
+                $memberId = $_SESSION["user"]->getMemberId();
+                $partId = $listOfParts[$x];
+                $partAmount = $listOfPartAmounts[$x];
+
+                $req = $this->companydb->prepare("INSERT INTO part_withdrawal_entries(work_order_id, member_id, part_id, amount) 
+                    VALUES ((SELECT id FROM work_orders WHERE generated_id='$generated_id'), '$memberId', '$partId', '$partAmount');");
+                $req->setFetchMode(PDO::FETCH_ASSOC);
+                $req->execute();
             }
         }
 

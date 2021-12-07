@@ -11,6 +11,14 @@
             $this->memberDAO = $_memberDAO;
         }
 
+        public function getUserId(){
+            return $this->userDAO->GetId();
+        }
+
+        public function getMemberId(){
+            return $this->memberDAO->GetId();
+        }
+
         public function GetEmail(){
             return $this->userDAO->GetEmail();
         }

@@ -232,39 +232,35 @@
                 <button id="work-order-add-part-btn" onclick="addPartRow()">Add a Part</button><br>
                 <?php 
                     if(isset($_GET["wogid"])){
-                        // $listofworkers = $action->GetListOfWorkers($_GET["wogid"]);
-                        // $listofmembers = [];
-                        
-                        // if($listofworkers != NULL){
+                        $listsOfPartsAndAmounts = $action->getListOfPartsAndAmounts($_GET["wogid"]);
+                        $listOfAllParts = $action->getAllParts();
+                        // var_dump("List of parts and amounts", $listsOfPartsAndAmounts);
+                        // var_dump("List of all parts", $listOfAllParts);
                             
-                            
-                        //     $req = $action->GetMembers();
-                        //     while($row = $req->fetch()){
+                        for ($x = 0; $x < count($listsOfPartsAndAmounts[0]); $x++) {
+                            echo "<div><select class='part-select'>";
+
+                            $partId = $listsOfPartsAndAmounts[0][$x]["id"];
+                            $generatedPartId = $listsOfPartsAndAmounts[0][$x]["generated_id"];
+                            $partName = $listsOfPartsAndAmounts[0][$x]["name"];
+                            $partStock = $listsOfPartsAndAmounts[0][$x]["stock"];
+                            $partAmount = $listsOfPartsAndAmounts[1][$x]["amount"];
+
+                            echo "<option value=$partId>$generatedPartId - $partName (Stock : $partStock)</option>";
+                            echo "<option value=0>-- None --</option>";
                                 
-                        //         array_push($listofmembers, $row);
-                        //     }
-                            
-                        
-                            
-                        //     for ($x = 0; $x <= count($listofworkers) - 1; $x++) {
-                        //         echo "<select class='work-order-worker-select'>";
-                        //         $workername = $listofworkers[$x]->GetName();
-                        //         $workersurname = $listofworkers[$x]->GetSurname();
-                        //         $workerid = $listofworkers[$x]->GetId();
-                        //         echo "<option value=$workerid>$workersurname $workername</option>";
-                        //         echo "<option value=0>-- None --</option>";
-                                
-                        //         for ($y = 0; $y <= count($listofmembers) - 1; $y++){
-                        //             if($listofmembers[$y]["id"] != $workerid){
-                        //                 $membername = $listofmembers[$y]["name"];
-                        //                 $membersurname = $listofmembers[$y]["surname"];
-                        //                 $memberid = $listofmembers[$y]["id"];
-                        //                 echo "<option value=$memberid>$membersurname $membername</option>";
-                        //             }
-                        //         }
-                        //         echo "</select>";
-                        //     }
-                        // }
+                            for ($y = 0; $y < count($listOfAllParts); $y++){
+                                var_dump($listOfAllParts[$y]->getId(), $partId);
+                                if(intval($listOfAllParts[$y]->getId()) != intval($partId)){
+                                    $nextPartId = $listOfAllParts[$y]->getId();
+                                    $generatedPartId = $listOfAllParts[$y]->getGeneratedId();
+                                    $partName = $listOfAllParts[$y]->getName();
+                                    $partStock = $listOfAllParts[$y]->getStock();
+                                    echo "<option value=$nextPartId>$generatedPartId - $partName (Stock : $partStock)</option>";
+                                }
+                            }
+                            echo "</select><input class='part-amount-input' value='$partAmount'></div>";
+                        }
                     }
                 ?>
             </fieldset>
@@ -462,10 +458,10 @@
                         alert(data["error"])
                 else{
                     console.log(data)
-                    // wogid = data["generated_id"]
-                    // alert("Enregistrement avec success!" + wogid)
-                    // window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
-                    // close()
+                    wogid = data["generated_id"]
+                    alert("Enregistrement avec success!" + wogid)
+                    window.open("work-order-instance.php?wogid=" + wogid) // Creates a new tab with no browsing history
+                    close()
                 }
             })
         }
