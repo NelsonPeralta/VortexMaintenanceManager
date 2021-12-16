@@ -2,18 +2,19 @@
 	*** Vortex Maintenance Manager
 	
 • Sommaire
-	Vortex Maintenance Manager est une application web qui permet la création d’un système de gestion maintenance. 
+	Vortex Maintenance Manager est une application web qui permet la création d’un système de gestion de maintenance. 
 	Plus précisément, elle concentre sur la création de formulaires des travaux faits à l’intérieur d’une usine qu’on appelle des “Bons de Travail”. 
 	Ceux-ci permettront de garder une archive de tous les détails qui concernent le travail comme le nombre de pièces utilisées et le nombre d’heures investis.
-	Ceci serviront de guide pour une meilleure planification d’un même travail dans le futur.
+	Finalement, ils serviront de guide pour une meilleure planification d’un même travail dans le futur.
 	
 Brève présentation de votre projet.
 • Installation
 	1. Installez Xampp(https://www.apachefriends.org/index.html)
+		1.5 Copiez-collez le dossier racine du projet sous C:\xampp\htdocs\
 	2. Démarrez Apache et MySQL de Xampp
 	3. Accédez phpMyAdmin localement en écrivant se texte dans votre navigateur web: http://localhost/phpmyadmin/index.php?route=/server/sql
 	4. Démarrez le code qui se retrouve dans \\ProjetSynthese\\dev\\scripts\\globaldb_creation.sql sur phpMyAdmin pour creer vos base de donnees par defaut
-	5. Accédez au site web en écrivant http://localhost/cvm/ProjetSynthese/dev/index.php dans votre navigateur web.
+	5. Accédez au site web en écrivant http://localhost/ProjetSynthese/dev/index.php dans votre navigateur web.
 
 • Utilisation
 	À partir de la page d'acceuil, Vous pouvez vous inscrire en cliquant sur Register et remplir les champs de donnees.

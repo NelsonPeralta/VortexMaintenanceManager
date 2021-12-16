@@ -154,9 +154,11 @@
                     </th>
                 </tr>
                 <tr>
-                    <th>Starting Date (TO DO)
+                    <!-- <th>Starting Date (TO DO)
                         
                         <input type="date">
+                    </th> -->
+                    <th>
                     </th>
                 </tr>
             </table>
