@@ -18,16 +18,5 @@
         <img src="sprites/vortex_logo.png" alt="sprites/vortex_logo" style="height:25rem;">
         <p>By Nelson Peralta</p>
     </section>
-    <!-- Start of ChatBot (www.chatbot.com) code -->
-    <script type="text/javascript">
-        window.__be = window.__be || {};
-        window.__be.id = "618131241b817c000704dacf";
-        (function() {
-            var be = document.createElement('script'); be.type = 'text/javascript'; be.async = true;
-            be.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.chatbot.com/widget/plugin.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(be, s);
-        })();
-    </script>
-    <!-- End of ChatBot code -->
 </body>
 </html>

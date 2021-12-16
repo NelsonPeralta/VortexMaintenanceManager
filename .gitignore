@@ -1,0 +1,5 @@
+# Ignore all Excel files
+*.xlsx
+
+# Ignore all Word files
+*.docx
