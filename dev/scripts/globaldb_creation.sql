@@ -1,3 +1,7 @@
+CREATE DATABASE `vortex_mmc_placeholder`; -- Ne sert a rien, seulement à séparer la bd globales des bd de compagnies
+CREATE DATABASE `vortex_mm_placeholder`; -- Ne sert a rien, seulement à séparer la bd globales des bd de compagnies
+CREATE DATABASE `vortex_mm_global`;
+
 -- --------------------------------------------------------
 
 --
@@ -60,4 +64,3 @@ ALTER TABLE `companies`
 --
 ALTER TABLE `users`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-  ADD UNIQUE KEY `id` (`id`);
